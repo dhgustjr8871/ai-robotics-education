@@ -5,6 +5,7 @@
 노트북(서버) ip, 로봇(client) ip 모두 지정하기
 freedrive 할 때 payload 신경 안 쓰면 날라감(건들지 말라..)
 socket 통신할 때 노트북에서 서버 먼저 열고, 로봇에 스크립트 보내기(terminal split을 어떻게 깔끔하게 할 지는 모르겠다...)
+이상하면 cmd+C로 터미널 종료
 
 
 ## 실습목표
