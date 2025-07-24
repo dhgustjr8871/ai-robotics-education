@@ -1,0 +1,1541 @@
+def new():
+  global _hidden_verificationVariable=0
+  set_target_payload(1.150000, [-0.001000, -0.031000, 0.043000], [0.001943, 0.001943, 0.001943, 0.000000, 0.000000, 0.000000])
+  set_standard_analog_input_domain(0, 1)
+  set_standard_analog_input_domain(1, 1)
+  set_tool_analog_input_domain(0, 1)
+  set_tool_analog_input_domain(1, 1)
+  set_analog_outputdomain(0, 0)
+  set_analog_outputdomain(1, 0)
+  set_input_actions_to_default()
+  set_runstate_standard_digital_outputs([3])
+  set_runstate_standard_digital_output_to_value(3, 4)
+  modbus_add_signal("127.0.0.1", 255, 128, 3, "MODBUS_1", False)
+  modbus_set_signal_update_frequency("MODBUS_1", 10)
+  modbus_add_signal("127.0.0.1", 255, 129, 3, "MODBUS_2", False)
+  modbus_set_signal_update_frequency("MODBUS_2", 10)
+  modbus_add_signal("127.0.0.1", 255, 130, 3, "MODBUS_3", False)
+  modbus_set_signal_update_frequency("MODBUS_3", 10)
+  modbus_add_signal("127.0.0.1", 255, 131, 3, "MODBUS_4", False)
+  modbus_set_signal_update_frequency("MODBUS_4", 10)
+  modbus_add_signal("127.0.0.1", 255, 129, 2, "MODBUS_5", False)
+  modbus_set_signal_update_frequency("MODBUS_5", 10)
+  modbus_add_signal("127.0.0.1", 255, 130, 2, "MODBUS_6", False)
+  modbus_set_signal_update_frequency("MODBUS_6", 10)
+  modbus_add_signal("127.0.0.1", 255, 167, 3, "MODBUS_8", False)
+  modbus_set_signal_update_frequency("MODBUS_8", 10)
+  modbus_add_signal("127.0.0.1", 255, 167, 3, "MODBUS_7", False)
+  modbus_set_signal_update_frequency("MODBUS_7", 10)
+  modbus_set_runstate_dependent_choice("MODBUS_1",0)
+  modbus_set_runstate_dependent_choice("MODBUS_2",0)
+  modbus_set_runstate_dependent_choice("MODBUS_3",0)
+  modbus_set_runstate_dependent_choice("MODBUS_4",0)
+  modbus_set_runstate_dependent_choice("MODBUS_8",0)
+  modbus_set_runstate_dependent_choice("MODBUS_7",0)
+  set_tool_communication(False, 115200, 0, 1, 1.5, 3.5)
+  set_tool_output_mode(0)
+  set_tool_digital_output_mode(0, 1)
+  set_tool_digital_output_mode(1, 1)
+  set_tool_voltage(0)
+  set_tcp(p[0.0,0.0,0.0,0.0,0.0,0.0])
+  set_safety_mode_transition_hardness(1)
+  set_gravity([0.0, 0.0, 9.82])
+  global g_check_pose=p[-0.12793, 0.05753, 0.64268, -0.51535, 0.52907, -0.77557]
+  global test1=p[0.7188627995569579,-0.09827778565329397,0.08906042427939243,0.0773219444088654,-3.131370431067945,0.01595834377651376]
+  global test2=p[0.0,0.0,0.0,0.0,0.0,0.0]
+  global u54540u47112u51064_1=p[-0.20229094646144757,1.0582383438922858,-0.20681270528137646,-0.0056002095085155666,0.009572650921745035,-1.5511539141519224]
+  # begin: URCap Installation Node
+  #   Source: esaDrive, 1.1.35.F, ECOSPHERE Automation GmbH
+  #   Type: Drives
+  esaDrive = rpc_factory("xmlrpc","http://127.0.0.1:44332/RPC2")
+  # Check esaDrive XMLRPC-connection
+  if esaDrive.isXmlrpcServerReachable() == False:
+    popup("[esaDrive] ERROR: The connection to the XMLRPC server could not be established.",title="ERROR", error=True,  blocking=True)
+    halt
+  end
+  
+  # ++++++++++++++++++++++++++++++esaDrive++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Function creates a blocking popup and then ends the robot program.
+  # INPUTS:
+  #     esa_errorCode      -> int:             error code number                   (-n .. n)
+  #     esa_drivePlcNr     -> int:             Number of the drivePlc              ( 0 .. n)
+  #     esa_driveNr        -> int:             Number of the drive                 ( 0 .. n)
+  # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  def esaDrive_popupErrorCodeAndHalt(esa_errorCode, esa_drivePlcNr, esa_driveNr):
+    local esa_drivePlcName = ""
+    local esa_driveName = ""
+    if esa_errorCode == -20:
+      esa_drivePlcName = esaDrive_getDrivePlcName(esa_drivePlcNr)
+      popup(str_cat(str_cat("[esaDrive] ERROR: No connection to Drive-Plc (", esa_drivePlcName),")."), title="ERROR", error=True, blocking=True)
+    elif esa_errorCode == -21:
+      esa_drivePlcName = esaDrive_getDrivePlcName(esa_drivePlcNr)
+      popup(str_cat(str_cat("[esaDrive] ERROR: Syntax error in communication between XmlrpcServer and DrivePlc (", esa_drivePlcName),")."), title="ERROR", error=True, blocking=True)
+    elif esa_errorCode == -25:
+      esa_driveName = esaDrive_getDriveName(esa_drivePlcNr, esa_driveNr)
+      popup(str_cat(str_cat("[esaDrive] ERROR: Connection error between robot and drive. Drive not responding. Check cable between robot and drive controller (", esa_driveName),")."), title="ERROR", error=True, blocking=True)
+    elif esa_errorCode == -29:
+      popup(str_cat(str_cat("[esaDrive] ERROR: Invalid drivePlc number (", esa_drivePlcNr),")."), title="ERROR", error=True, blocking=True)
+    elif esa_errorCode == -31:
+      popup(str_cat(str_cat("[esaDrive] ERROR: Invalid drive number (", esa_driveNr),")."), title="ERROR", error=True, blocking=True)
+    elif esa_errorCode == -40:
+      popup(str_cat(str_cat("[esaDrive] ERROR: Error reading a parameter from the drive controller (", esa_driveNr),")."), title="ERROR", error=True, blocking=True)
+    elif esa_errorCode == -50:
+      esa_driveName = esaDrive_getDriveName(esa_drivePlcNr, esa_driveNr)
+      popup(str_cat(str_cat("[esaDrive] ERROR: The settings in the drive do not match the installation settings. Check the drive settings in the installation tab (", esa_driveName),")."), title="ERROR", error=True, blocking=True)
+    elif esa_errorCode == -60:
+      esa_driveName = esaDrive_getDriveName(esa_drivePlcNr, esa_driveNr)
+      popup(str_cat(str_cat("[esaDrive] ERROR: A synchronization error has occurred. Please restart the robot controller and the drive (", esa_driveNr),")."), title="ERROR", error=True, blocking=True)
+    elif esa_errorCode == -80:
+      popup("[esaDrive] ERROR: The robot is not fully turned on. The robot must be turned on to move the drive.", title="ERROR", error=True, blocking=True)
+    elif esa_errorCode == -99:
+      popup("[esaDrive] ERROR: No valid license for the URCap esaDrive was found. A trial license is active. With the trial license, the URCap can be tried out.", title="ERROR", error=True, blocking=True)
+    elif esa_errorCode == -150:
+      esa_driveName = esaDrive_getDriveName(esa_drivePlcNr, esa_driveNr)
+      popup(str_cat(str_cat("[esaDrive] ERROR: The target position of the drive is out of limit (", esa_driveName),")."), title="ERROR", error=True, blocking=True)
+    elif esa_errorCode == -300:
+      esa_driveName = esaDrive_getDriveName(esa_drivePlcNr, esa_driveNr)
+      popup(str_cat(str_cat("[esaDrive] ERROR: The RTE selector switches on the drive controller housing are not set correctly. Must be set to SW1=1, SW2=1, SW3=0 (", esa_driveName),")."), title="ERROR", error=True, blocking=True)
+    elif esa_errorCode == -305:
+      esa_driveName = esaDrive_getDriveName(esa_drivePlcNr, esa_driveNr)
+      popup(str_cat(str_cat("[esaDrive] ERROR: The Modbus telegram in the drive controller is set incorrectly. Must be set to Telegram=111. Can be changed in the FESTO AUTOMATION SUITE (", esa_driveName),")."), title="ERROR", error=True, blocking=True)
+    elif esa_errorCode == -310:
+      esa_driveName = esaDrive_getDriveName(esa_drivePlcNr, esa_driveNr)
+      popup(str_cat(str_cat("[esaDrive] ERROR: An invalid UserUnit is set in the drive controller. Currently only the units of measurement Metric [m, m/s, ...] and Degree [°, °/s, ...] are supported. Can be changed in the FESTO AUTOMATION SUITE (", esa_driveName),")."), title="ERROR", error=True, blocking=True)
+    elif esa_errorCode == -315:
+      esa_driveName = esaDrive_getDriveName(esa_drivePlcNr, esa_driveNr)
+      popup(str_cat(str_cat("[esaDrive] ERROR: The FactorGroup is set incorrectly in the drive controller. Currently only (Position=-6 , Velocity=-3) is supported. Can be changed in the FESTO AUTOMATION SUITE (", esa_driveName),")."), title="ERROR", error=True, blocking=True)
+    elif esa_errorCode == -400:
+      esa_driveName = esaDrive_getDriveName(esa_drivePlcNr, esa_driveNr)
+      popup(str_cat(str_cat("[esaDrive] ERROR: The drive controller parameter ENCODER_INCREMENTS is invalid (", esa_driveName),")."), title="ERROR", error=True, blocking=True)
+    elif esa_errorCode == -401:
+      esa_driveName = esaDrive_getDriveName(esa_drivePlcNr, esa_driveNr)
+      popup(str_cat(str_cat("[esaDrive] ERROR: The drive controller parameter GEAR_DENOMINATOR is invalid (", esa_driveName),")."), title="ERROR", error=True, blocking=True)
+    elif esa_errorCode == -500:
+      esa_driveName = esaDrive_getDriveName(esa_drivePlcNr, esa_driveNr)
+      popup(str_cat(str_cat("[esaDrive] ERROR: Error when reading out the fault buffer of the drive (", esa_driveName),")."), title="ERROR", error=True, blocking=True)
+    else:
+      popup(str_cat(str_cat("[esaDrive] ERROR: Unknown error number (",esa_errorCode),")."), title="ERROR", error=True, blocking=True)
+    end
+    halt
+  end
+  
+  # ++++++++++++++++++++++++++++++esaDrive++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Function returns the name of the drivePlc.
+  # INPUTS:
+  #     esa_drivePlcNr      -> int:           Number of the drivePlc                (0 .. n)
+  # OUTPUT:
+  #     return              -> string:        Name of the drivePlc
+  # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  def esaDrive_getDrivePlcName(esa_drivePlcNr):
+    if esa_drivePlcNr == 0:
+      return "VirtualPLC"
+    else:
+      esaDrive_popupErrorCodeAndHalt(-29, esa_drivePlcNr, -1)
+    end
+  end
+  
+  # ++++++++++++++++++++++++++++++esaDrive++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Function returns IP adress of the drivePlc.
+  # INPUTS:
+  #     esa_drivePlcNr   -> int:     Number of the drivePlc                         (0 .. n)
+  # OUTPUT:
+  #     return           -> string:  IP adress of the drivePlc ("" = error)
+  # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  def esaDrive_getDrivePlcIp(esa_drivePlcNr):
+    if esa_drivePlcNr == 0:
+      return "127.0.0.1"
+    else:
+      esaDrive_popupErrorCodeAndHalt(-29, esa_drivePlcNr, -1)
+    end
+  end
+  
+  # ++++++++++++++++++++++++++++++esaDrive++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Function returns the name of the drive.
+  # INPUTS:
+  #     esa_drivePlcNr     -> int:             Number of the drivePlc               (0 .. n)
+  #     esa_driveNr        -> int:             Number of the drive                  (0 .. n)
+  # OUTPUT:
+  #     return             -> string:          Name of the drive
+  # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  def esaDrive_getDriveName(esa_drivePlcNr, esa_driveNr):
+    if esa_drivePlcNr == 0:
+      if esa_driveNr == 0:
+        return "FestoDrive"
+      end
+    end
+    return ""
+  end
+  
+  # ++++++++++++++++++++++++++++++esaDrive++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Function returns the drivePlcNumber and the driveNumber.
+  # INPUTS:
+  #     esa_driveName   -> string:         Name of the drive
+  # OUTPUT:
+  #     return          -> int-Array[0]:   drivePlcNumber (-1 = error)             (-1 .. n)
+  #                     -> int-Array[1]:   driveNumber (-1 = error)                (-1 .. n)
+  # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  def esaDrive_getPlcAndDriveNr(esa_driveName):
+    local esa_drivePlcNr = -1
+    local esa_driveNr = -1
+    if esa_driveName == "FestoDrive":
+      esa_drivePlcNr = 0
+      esa_driveNr = 0
+    end
+    if esa_drivePlcNr == -1:
+      popup(str_cat(str_cat("[esaDrive] ERROR: There is no drive with the name ", esa_driveName),"."),title="Referenzierung", blocking=True)
+      halt
+    end
+    return [esa_drivePlcNr,esa_driveNr]
+  end
+  
+  # ++++++++++++++++++++++++++++++esaDrive++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Function returns the homing parameters (params1).
+  # INPUTS:
+  #     esa_drivePlcNr  -> int:            Number of the drivePlc                   ( 0 .. n)
+  #     esa_driveNr     -> int:            Number of the drive                      ( 0 .. n)
+  # OUTPUT:
+  #     return          -> int-Array[0]:   Homing mode                              (0 .. n)
+  #                     -> int-Array[1]:   Approach direction                       (0 .. n)
+  # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  def esaDrive_getHomingParams1(esa_drivePlcNr, esa_driveNr):
+    local esa_homingMode = -1
+    local esa_approachDirection = -1
+    if esa_drivePlcNr == 0:
+      if esa_driveNr == 0:
+        esa_homingMode = 0
+        esa_approachDirection = 0
+      end
+    end
+    return [esa_homingMode,esa_approachDirection]
+  end
+  
+  # ++++++++++++++++++++++++++++++esaDrive++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Function returns the homing parameters (params2).
+  # INPUTS:
+  #     esa_drivePlcNr  -> int:            Number of the drivePlc                  ( 0 .. n)
+  #     esa_driveNr     -> int:            Number of the drive                     ( 0 .. n)
+  # OUTPUT:
+  #     return          -> float-Array[0]: Homing position                         (m)
+  #                     -> float-Array[1]: Homing acceleration                     (m/s2)
+  #                     -> float-Array[2]: Homing deceleration                     (m/s2)
+  #                     -> float-Array[3]: Approache velocity                      (m/s)
+  #                     -> float-Array[4]: Referencing velocity                    (m/s)
+  # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  def esaDrive_getHomingParams2(esa_drivePlcNr, esa_driveNr):
+    local esa_homingPosition = 0.0
+    local esa_homingAcceleration = 0.0
+    local esa_homingDeceleration = 0.0
+    local esa_approacheVelocity = 0.0
+    local esa_referencingVelocity = 0.0
+    if esa_drivePlcNr == 0:
+      if esa_driveNr == 0:
+        esa_homingPosition = 0.0
+        esa_homingAcceleration = 0.4
+        esa_homingDeceleration = 0.4
+        esa_approacheVelocity = 0.1
+        esa_referencingVelocity = 0.001
+      end
+    end
+    return [esa_homingPosition,esa_homingAcceleration,esa_homingDeceleration,esa_approacheVelocity,esa_referencingVelocity]
+  end
+  
+  # ++++++++++++++++++++++++++++++esaDrive++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Function returns the application resolution of the drive.
+  # INPUTS:
+  #     esa_drivePlcNr  -> int:            Number of the drivePlc                  ( 0 .. n)
+  #     esa_driveNr     -> int:            Number of the drive                     ( 0 .. n)
+  # OUTPUT:
+  #     return          -> float:          Application resolution                  (m)
+  # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  def esaDrive_getAppResolution(esa_drivePlcNr, esa_driveNr):
+    local esa_appResolution = 0.0
+    if esa_drivePlcNr == 0:
+      if esa_driveNr == 0:
+        esa_appResolution = 1.0E-5
+      end
+    end
+    return esa_appResolution
+  end
+  
+  # ++++++++++++++++++++++++++++++esaDrive++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Function returns the maximum and minimum position (software limit switches) of the drive.
+  # INPUTS:
+  #     esa_drivePlcNr  -> int:            Number of the drivePlc                  ( 0 .. n)
+  #     esa_driveNr     -> int:            Number of the drive                     ( 0 .. n)
+  # OUTPUT:
+  #     return          -> float-Array[0]: Max position                            (m)
+  #                     -> float-Array[1]: Min acceleration                        (m)
+  # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  def esaDrive_getMaxAndMinPosition(esa_drivePlcNr, esa_driveNr):
+    local esa_maxPosition = 0.0
+    local esa_minPosition = 0.0
+    if esa_drivePlcNr == 0:
+      if esa_driveNr == 0:
+        esa_maxPosition = 0.797
+        esa_minPosition = -0.003
+      end
+    end
+    return [esa_maxPosition,esa_minPosition]
+  end
+  
+  # ++++++++++++++++++++++++++++++esaDrive++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Function connects the drivePlc to the robot if the connection does not already exist.
+  # INPUTS:
+  #     esa_drivePlcNr  -> int:           Number of the drivePlc                    (1 .. n)
+  # OUTPUT:
+  #     return          -> int:           Error number (0 = no error)              (-1 .. n)
+  # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  def esaDrive_connectDrivePlc(esa_drivePlcNr):
+    local esa_drivePlcIp = ""
+    local esa_ret = 0
+    esa_ret = esaDrive.isDrivePlcConnected(esa_drivePlcNr)
+    if esa_ret == 1:
+      return 0
+    else:
+      esa_drivePlcIp = esaDrive_getDrivePlcIp(esa_drivePlcNr)
+      esa_ret = esaDrive.connectDrivePlc(esa_drivePlcIp,44331,esa_drivePlcNr)
+      if esa_ret == 0:
+        return 0
+      else:
+        esaDrive_popupErrorCodeAndHalt(esa_ret, esa_drivePlcNr, -1)
+      end
+    end
+  end
+  
+  # ++++++++++++++++++++++++++++++esaDrive++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Function connects drive to the drivePlc if the connection does not already exist.
+  # INPUTS:
+  #     esa_drivePlcNr  -> int:           Number of the drivePlc                   ( 1 .. n)
+  #     esa_driveNr     -> int:           Number of the drive                      ( 0 .. n)
+  # OUTPUT:
+  #     return          -> int:           Error number (0 = no error)              (-1 .. n)
+  # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  def esaDrive_connectDrive(esa_drivePlcNr, esa_driveNr):
+    local esa_drivePlcIp = ""
+    local esa_ret = 0
+    local esa_waitCounter = 0
+    while 1:
+      esa_ret = esaDrive.drive_GetFaultStatus(esa_drivePlcNr, esa_driveNr)
+      if esa_ret >= 0:
+        return 0
+      elif esa_waitCounter >= 30:
+        esaDrive_popupErrorCodeAndHalt(esa_ret, esa_drivePlcNr, esa_driveNr)
+      end
+      sleep(0.1)
+      esa_waitCounter = esa_waitCounter + 1
+    end
+  end
+  
+  # ++++++++++++++++++++++++++++++esaDrive++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Function resets the drive.
+  # INPUTS:
+  #     esa_drivePlcNr  -> int:            Number of the drivePlc                  ( 0 .. n)
+  #     esa_driveNr     -> int:            Number of the drive                     ( 0 .. n)
+  # OUTPUT:
+  #     return           -> int:           Error number (0 = no error)             (-1 .. n)
+  # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  def esaDrive_reset(esa_drivePlcNr, esa_driveNr):
+    local esa_ret = -1
+    local esa_waitCounter = 0
+    while 1:
+      esa_ret = esaDrive.drive_SetResetTrigger(esa_drivePlcNr,esa_driveNr)
+      esa_ret = esaDrive.drive_GetFaultStatus(esa_drivePlcNr, esa_driveNr)
+      if esa_ret == 0:
+        return 0
+      end
+      esa_waitCounter = esa_waitCounter + 1
+      if esa_waitCounter > 10:
+        esaDrive_popupErrorCodeAndHalt(esa_ret, esa_drivePlcNr, esa_driveNr)
+      end
+      sleep(0.1)
+    end
+  end
+  
+  # ++++++++++++++++++++++++++++++esaDrive++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Function turns on the power of the drive.
+  # INPUTS:
+  #     esa_drivePlcNr  -> int:            Number of the drivePlc                  ( 0 .. n)
+  #     esa_driveNr     -> int:            Number of the drive                     ( 0 .. n)
+  # OUTPUT:
+  #     return           -> int:           Error number (0 = no error)             (-1 .. n)
+  # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  def esaDrive_powerOn(esa_drivePlcNr, esa_driveNr):
+    local esa_ret = -1
+    local esa_waitCounter = 0
+    esa_ret = esaDrive.drive_GetPowerStatus(esa_drivePlcNr,esa_driveNr)
+    if esa_ret == 1:
+      return 0
+    elif esa_ret == 0:
+      esa_ret = esaDrive.drivePlc_CompareInstClonesWithDrive(esa_drivePlcNr,esa_driveNr)
+      if esa_ret < 1:
+        if esa_ret == 0:
+          esa_ret = -50
+        end
+        esaDrive_popupErrorCodeAndHalt(esa_ret, esa_drivePlcNr, esa_driveNr)
+      end
+      esa_waitCounter = 0
+      while 1:
+        if esa_waitCounter == 0:
+          esaDrive.drive_SetPowerOff(esa_drivePlcNr,esa_driveNr)
+          esaDrive.drive_SetPowerOn(esa_drivePlcNr,esa_driveNr)
+        end
+        if 1 == esaDrive.drive_GetPowerStatus(esa_drivePlcNr,esa_driveNr):
+          return 0
+        end
+        esa_waitCounter = esa_waitCounter + 1
+        if esa_waitCounter > 40:
+          popup(str_cat(str_cat("[esaDrive] ERROR: The drive ", esaDrive_getDriveName(esa_drivePlcNr, esa_driveNr)), " could not be switched to power on state."),title="ERROR", warning=False, error=True, blocking=True)
+          esa_waitCounter = 0
+        end
+        sleep(0.1)
+      end
+    else:
+      esaDrive_popupErrorCodeAndHalt(esa_ret, esa_drivePlcNr, esa_driveNr)
+    end
+  end
+  
+  # ++++++++++++++++++++++++++++++esaDrive++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Function execute the reference run (homing of the drive).
+  # INPUTS:
+  #     esa_driveName    -> string:         Name of the drive
+  #     esa_conditions   -> int:            Homing conditions                      ( 0 .. n)
+  #     esa_askUser      -> int:            Ask user before start homing           ( 0 .. n)
+  # OUTPUT:
+  #     return           -> int-Array[0]:   Error number (0 = no error)            (-1 .. n)
+  # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  def esaDrive_homing(esa_driveName, esa_conditions, esa_askUser):
+    local esa_ret = -1
+    local esa_plcAndDriveNr = [-1,-1]
+    local esa_drivePlcNr = -1
+    local esa_driveNr = -1
+    local esa_counter = 0
+  
+    esa_plcAndDriveNr = esaDrive_getPlcAndDriveNr(esa_driveName)
+    esa_drivePlcNr = esa_plcAndDriveNr[0]
+    esa_driveNr = esa_plcAndDriveNr[1]
+    esa_ret = esaDrive.drive_GetHomingStatus(esa_drivePlcNr,esa_driveNr)
+    if esa_ret == 1 and esa_conditions == 1:
+      return 0
+    else:
+      esaDrive_connectDrivePlc(esa_drivePlcNr)
+        esaDrive_connectDrive(esa_drivePlcNr, esa_driveNr)
+        esaDrive_reset(esa_drivePlcNr, esa_driveNr)
+      esaDrive_powerOn(esa_drivePlcNr, esa_driveNr)
+      esa_ret = esaDrive.drive_GetHomingStatus(esa_drivePlcNr,esa_driveNr)
+      if esa_ret == 1 and esa_conditions == 1:
+        return 0
+      else:
+        local esa_homingParams1 = esaDrive_getHomingParams1(esa_drivePlcNr, esa_driveNr)
+        local esa_homingMode = esa_homingParams1[0]
+        local esa_approachDirection = esa_homingParams1[1]
+        local esa_homingParams2 = esaDrive_getHomingParams2(esa_drivePlcNr, esa_driveNr)
+        local esa_homingPosition = esa_homingParams2[0]
+        local esa_homingAcceleration = esa_homingParams2[1]
+        local esa_homingDeceleration = esa_homingParams2[2]
+        local esa_approacheVelocity = esa_homingParams2[3]
+        local esa_referencingVelocity = esa_homingParams2[4]
+        if esa_askUser == 1:
+          popup(str_cat(str_cat("[esaDrive] The drive ", esaDrive_getDriveName(esa_drivePlcNr, esa_driveNr)), " is not referenced (homed). Press Continue to start the reference movement now."),title="Homing", blocking=True)
+        end
+        esaDrive.drive_ExecuteHoming(esa_drivePlcNr,esa_driveNr,esa_homingMode,esa_homingPosition,esa_homingAcceleration,esa_homingDeceleration,esa_approachDirection,esa_approacheVelocity,esa_referencingVelocity)
+        sleep(1.0)
+        esa_counter = 0
+        while 1:
+          esa_ret = esaDrive.drive_GetHomingStatus(esa_drivePlcNr,esa_driveNr)
+          if (esa_ret == 1):
+            break
+          end
+          if (esa_ret < 0):
+            esaDrive_popupErrorCodeAndHalt(esa_ret, esa_drivePlcNr, esa_driveNr)
+          end
+          sleep(0.1)
+        end
+      end
+    end
+    return 0
+  end
+  
+  # ++++++++++++++++++++++++++++++esaDrive++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Function moves the selected drive to the target position (absolute positioning).
+  # This Function is for internal purposes only.
+  # Do not call this function from the user program.
+  # INPUTS:
+  #     esa_driveName   -> string:         Name of the drive
+  #     pos_vel_acc_dec -> float-Array[0]: Target position                         (m)
+  #                     -> float-Array[1]: Velocity                                (m/s)
+  #                     -> float-Array[2]: Acceleration                            (m/s2)
+  #                     -> float-Array[3]: Deceleration                            (m/s2)
+  #     esa_seq         -> bool-Array[0]:  Wait until position is reached = 0      (0 .. 1)
+  # OUTPUT:
+  #     return          -> int-Array[0]:   Error number (0 = no error)             (-1 .. n)
+  # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  def esaDrive_moveAbsolute_internal(esa_driveName, pos_vel_acc_dec, esa_seq):
+    local esa_targetPosition = pos_vel_acc_dec[0]
+    local esa_velocity = pos_vel_acc_dec[1]
+    local esa_acceleration = pos_vel_acc_dec[2]
+    local esa_deceleration = pos_vel_acc_dec[3]
+    local esa_sequenceMode = esa_seq[0]
+    local esa_plcAndDriveNr = [-1,-1]
+    local esa_drivePlcNr = -1
+    local esa_driveNr = -1
+    local esa_maxAndMinPosition = [0.0,0.0]
+    local esa_maxPosition = 0.0
+    local esa_minPosition = 0.0
+    local esa_moveRet = 0
+    local esa_getPositionRet = [0.0, 0.0]
+    local esa_appResolution = 0.0
+    local esa_positionWindowMax = 0.0
+    local esa_positionWindowMin = 0.0
+    local esa_driveCurrentPosition = 0.0
+    local esa_driveStatusBits = [0,0,0,0,0,0]
+    local esa_firstFaultCheck = True
+    local esa_drivePowerStatus = False
+    local esa_driveFaultStatus = False
+    local esa_driveInPosition = False
+    local esa_driveStationary = False
+    local esa_homingStatus = False
+    local esa_driveInPositionWindow = False
+  
+    esa_plcAndDriveNr = esaDrive_getPlcAndDriveNr(esa_driveName)
+    esa_drivePlcNr = esa_plcAndDriveNr[0]
+    esa_driveNr = esa_plcAndDriveNr[1]
+  
+    esa_maxAndMinPosition = esaDrive_getMaxAndMinPosition(esa_drivePlcNr,esa_driveNr)
+    esa_maxPosition = esa_maxAndMinPosition[0]
+    esa_minPosition = esa_maxAndMinPosition[1]
+    if (esa_targetPosition > esa_maxPosition) or (esa_targetPosition < esa_minPosition):
+        esaDrive_popupErrorCodeAndHalt(-150, esa_drivePlcNr, esa_driveNr)
+    end
+  
+    esa_appResolution = esaDrive_getAppResolution(esa_drivePlcNr,esa_driveNr)
+    esa_positionWindowMax = esa_targetPosition + esa_appResolution
+    esa_positionWindowMin = esa_targetPosition - esa_appResolution
+  
+    # Loop until the command is executed
+    while 1:
+      esa_driveStatusBits = esaDrive.drive_GetStatusBits(esa_drivePlcNr,esa_driveNr)
+      esa_drivePowerStatus = 0 < esa_driveStatusBits[1]
+      esa_driveFaultStatus = 0 < esa_driveStatusBits[2]
+      esa_driveInPosition = 0 < esa_driveStatusBits[3]
+      esa_driveStationary = 0 < esa_driveStatusBits[4]
+      esa_homingStatus = 0 < esa_driveStatusBits[5]
+      if esa_drivePowerStatus == False or esa_driveFaultStatus == True or esa_homingStatus == False:
+        if esa_firstFaultCheck == False and esa_driveFaultStatus == True:
+          popup(str_cat(str_cat("[esaDrive] Drive error (", esa_driveNr),")."), title="ERROR", error=True, blocking=True)
+        end
+        esaDrive_connectDrivePlc(esa_drivePlcNr)
+        esaDrive_connectDrive(esa_drivePlcNr, esa_driveNr)
+        esaDrive_reset(esa_drivePlcNr, esa_driveNr)
+        esaDrive_powerOn(esa_drivePlcNr, esa_driveNr)
+        esaDrive_homing(esa_driveName,1,1)
+      else:
+        esa_getPositionRet = esaDrive.drive_GetPosition(esa_drivePlcNr,esa_driveNr)
+        esa_driveCurrentPosition = esa_getPositionRet[1]
+        if  esa_driveStationary == True and esa_driveInPosition == True and esa_driveCurrentPosition <= esa_positionWindowMax and esa_driveCurrentPosition >= esa_positionWindowMin:
+          return 0
+        end
+      end
+      esa_firstFaultCheck = False
+  
+      esa_moveRet = esaDrive.drive_MoveAbsolute(esa_drivePlcNr,esa_driveNr,esa_targetPosition,esa_velocity,esa_acceleration,esa_deceleration)
+      if esa_moveRet < 0:
+        esaDrive_popupErrorCodeAndHalt(esa_moveRet, esa_drivePlcNr, esa_driveNr)
+      end
+      if esa_sequenceMode == 1:
+        return 0
+      end
+      while 1:
+        esa_driveStatusBits = esaDrive.drive_GetStatusBits(esa_drivePlcNr,esa_driveNr)
+        esa_drivePowerStatus = 0 < esa_driveStatusBits[1]
+        esa_driveFaultStatus = 0 < esa_driveStatusBits[2]
+        esa_driveInPosition = 0 < esa_driveStatusBits[3]
+        esa_driveStationary = 0 < esa_driveStatusBits[4]
+        esa_getPositionRet = esaDrive.drive_GetPosition(esa_drivePlcNr,esa_driveNr)
+        esa_driveCurrentPosition = esa_getPositionRet[1]
+        esa_driveInPositionWindow = esa_driveCurrentPosition <= esa_positionWindowMax and esa_driveCurrentPosition >= esa_positionWindowMin
+        if esa_driveStationary == True and esa_driveInPosition == True and esa_driveInPositionWindow == True:
+          return 0
+        elif esa_driveStationary == True and esa_driveInPosition == True and esa_driveInPositionWindow == False:
+          break
+        elif esa_driveStatusBits[0] < 0 or esa_drivePowerStatus == False or esa_driveFaultStatus == True:
+          break
+        end
+        if True == esaDrive_checkThreadMoveAbsolute_quite(esa_drivePlcNr, esa_driveNr):
+          return 0
+        end
+        sync()
+      end
+    end
+  end
+  
+  # ++++++++++++++++++++++++++++++esaDrive++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Function checks whether the threadMoveAbsolute should be terminated.
+  # INPUTS:
+  #     esa_drivePlcNr     -> int:             Number of the drivePlc               (0 .. n)
+  #     esa_driveNr        -> int:             Number of the drive                  (0 .. n)
+  # OUTPUT:
+  #     return             -> bool:            false=notQuitThread, true=quitThread
+  # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  def esaDrive_checkThreadMoveAbsolute_quite(esa_drivePlcNr, esa_driveNr):
+    if esa_drivePlcNr == 0:
+      if esa_driveNr == 0:
+        return esa_threadMoveAbsolute_quit_0_0
+      end
+    end
+  end
+  
+  # ++++++++++++++++++++++++++++++esaDrive++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Thread moveAbsolute drivePlc_0 drive_0
+  # This thread is for internal purposes only.
+  # Do not call this thread from the user program.
+  # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  local esa_threadMoveAbsolute_driveName_0_0 = ""
+  local esa_threadMoveAbsolute_pos_vel_acc_dec_0_0 = [0.0,0.0,0.0,0.0]
+  local esa_threadMoveAbsolute_quit_0_0 = False
+  local esa_threadMoveAbsolute_running_0_0 = False
+  thread esa_threadMoveAbsolute_0_0():
+    esa_threadMoveAbsolute_quit_0_0 = False
+    esaDrive_moveAbsolute_internal(esa_threadMoveAbsolute_driveName_0_0, esa_threadMoveAbsolute_pos_vel_acc_dec_0_0, [0])
+    enter_critical
+    esa_threadMoveAbsolute_running_0_0 = False
+    esa_threadMoveAbsolute_quit_0_0 = False
+    exit_critical
+  end
+  
+  # ++++++++++++++++++++++++++++++esaDrive++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Function moves the selected drive to the target position (absolute positioning).
+  # INPUTS:
+  #     esa_driveName   -> string:         Name of the drive
+  #     pos_vel_acc_dec -> float-Array[0]: Target position                         (m)
+  #                     -> float-Array[1]: Velocity                                (m/s)
+  #                     -> float-Array[2]: Acceleration                            (m/s2)
+  #                     -> float-Array[3]: Deceleration                            (m/s2)
+  #     esa_seq         -> bool-Array[0]:  Wait until position is reached = 0      (0 .. 1)
+  # OUTPUT:
+  #     return          -> int-Array[0]:   Error number (0 = no error)             (-1 .. n)
+  # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  def esaDrive_moveAbsolute(esa_driveName, pos_vel_acc_dec, esa_seq):
+    local esa_plcAndDriveNr = [-1,-1]
+    local esa_drivePlcNr = -1
+    local esa_driveNr = -1
+  
+    esa_plcAndDriveNr = esaDrive_getPlcAndDriveNr(esa_driveName)
+    esa_drivePlcNr = esa_plcAndDriveNr[0]
+    esa_driveNr = esa_plcAndDriveNr[1]
+    if esa_drivePlcNr == 0:
+      if esa_driveNr == 0:
+        local threadHandle = -1
+        while 1:
+          enter_critical
+          if esa_threadMoveAbsolute_running_0_0 == True:
+            esa_threadMoveAbsolute_quit_0_0 = True
+          end
+          exit_critical
+          enter_critical
+          if esa_threadMoveAbsolute_running_0_0 == False:
+            esa_threadMoveAbsolute_driveName_0_0 = esa_driveName
+            esa_threadMoveAbsolute_pos_vel_acc_dec_0_0 = pos_vel_acc_dec
+            esa_threadMoveAbsolute_running_0_0 = True
+            threadHandle = run esa_threadMoveAbsolute_0_0()
+          end
+          exit_critical
+          if threadHandle >= 0:
+            if esa_seq[0] == 0:
+              join threadHandle
+            end
+            return 0
+          end
+          sync()
+        end
+      end
+    end
+  end
+  
+  # ++++++++++++++++++++++++++++++esaDrive++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Function returns the current position value of the drive.
+  # INPUTS:
+  #     esa_driveName   -> string:         Name of the drive
+  # OUTPUT:
+  #     return          -> float:          Current position of the drive              (m)
+  # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  def esaDrive_getPosition(esa_driveName):
+    local esa_plcAndDriveNr = [-1,-1]
+    local esa_drivePlcNr = -1
+    local esa_driveNr = -1
+    local esa_getPositionRet = [0.0, 0.0]
+    local esa_status = 0.0
+    local esa_driveCurrentPosition = 0.0
+  
+    esa_plcAndDriveNr = esaDrive_getPlcAndDriveNr(esa_driveName)
+    esa_drivePlcNr = esa_plcAndDriveNr[0]
+    esa_driveNr = esa_plcAndDriveNr[1]
+  
+    # Loop until the command is executed
+    while 1:
+      esa_getPositionRet = esaDrive.drive_GetPosition(esa_drivePlcNr,esa_driveNr)
+      esa_status = esa_getPositionRet[0]
+      esa_driveCurrentPosition = esa_getPositionRet[1]
+      if esa_status == 0.0:
+        return esa_driveCurrentPosition
+      end
+      esaDrive_connectDrivePlc(esa_drivePlcNr)
+      esaDrive_connectDrive(esa_drivePlcNr, esa_driveNr)
+      sync()
+    end
+  end
+  
+  # end: URCap Installation Node
+  # begin: URCap Installation Node
+  #   Source: Robotiq_Grippers, 3.27.0.122343, Robotiq Inc.
+  #   Type: 진공
+  #################################################
+  # Vacuum Grip Check
+  #################################################
+  
+  vacuumGripCheckThread1 = 0
+  vacuumGripCheckThread2 = 0
+  vacuumGripCheckThread3 = 0
+  vacuumGripCheckThread4 = 0
+  vacuumGripCheckThread1Running = False
+  vacuumGripCheckThread2Running = False
+  vacuumGripCheckThread3Running = False
+  vacuumGripCheckThread4Running = False
+  vacuumGripCheckslave_id = 1
+  vacuumGripCheckThreadStarted = False
+  
+  thread vacuumGripCheck():
+    slave_id = vacuumGripCheckslave_id
+    vacuumGripCheckThreadStarted = True
+  
+    while (True):
+      objectDetectedDebounceCtr = 0
+  
+      while (objectDetectedDebounceCtr < 3):
+        if(rq_is_vacuum_obj_detected_by_slave_id(slave_id=9)):
+          objectDetectedDebounceCtr = objectDetectedDebounceCtr + 1
+        else:
+          objectDetectedDebounceCtr = 0
+        end
+        sleep(0.1)
+      end
+  
+      objectNotDetectedDebounceCtr = 0
+  
+      while objectNotDetectedDebounceCtr < 3:
+        if (not rq_is_vacuum_obj_detected_by_slave_id(slave_id=9)):
+          objectNotDetectedDebounceCtr = objectNotDetectedDebounceCtr + 1
+        else:
+          objectNotDetectedDebounceCtr = 0
+        end
+        sleep(0.1)
+      end
+  
+      socket_open("127.0.0.1",29999,"dashboardServerSocket")
+      socket_send_line("pause","dashboardServerSocket")
+      socket_send_string("popup Vacuum grip check has detected an object drop.", "dashboardServerSocket")
+      socket_send_byte(10, "dashboardServerSocket")
+      socket_close("dashboardServerSocket")
+  
+      sleep(0.008)
+    end
+  end
+  
+  def startVacuumGripCheckThread(slave_id=9):
+    vacuumGripCheckslave_id = slave_id
+    threadHandle = run vacuumGripCheck()
+    waitForVacuumGripCheckThreadStarted()
+    return threadHandle
+  end
+  
+  def stopVacuumGripCheckThread(threadHandle):
+    kill threadHandle
+  end
+  
+  def waitForVacuumGripCheckThreadStarted():
+    while (not(vacuumGripCheckThreadStarted)):
+      sleep(0.008)
+    end
+    vacuumGripCheckThreadStarted = False
+  end
+  #################################################
+  # End - Vacuum Grip Check
+  #################################################
+  
+  #################################################
+  # Stops the pump on a distance travelled
+  #################################################
+  global stopPumpDistance = 100
+  global stopPumpslave_id = 0
+  global stopPumpThreadStarted = [False, False, False, False]
+  global stopPumpThreadHandles = [0, 0, 0, 0]
+  
+  thread stopPumpOnDistanceTravelled():
+    distance = stopPumpDistance
+    slave_id = stopPumpslave_id
+    stopPumpThreadStarted[rq_slave_id_to_index(slave_id)] = True
+  
+    measuredDistance = waitForDistanceTravelled(distance)
+  
+    rq_stop(slave_id_to_gripper_socket(slave_id))
+  
+    stopPumpThreadStarted[rq_slave_id_to_index(slave_id)] = False
+  end
+  
+  def waitForDistanceTravelled(distance):
+    startingPose = get_actual_tcp_pose()
+    measuredDistance = 0
+    while (measuredDistance < distance):
+      sleep(0.1)
+      measuredDistance = point_dist(get_actual_tcp_pose(), startingPose)
+    end
+  
+    return measuredDistance
+  end
+  
+  def startStopPumpOnDistanceTravelledThread(distance, slave_id=9):
+    if (stopPumpThreadStarted[rq_slave_id_to_index(slave_id)]):
+      return 0
+    end
+  
+    global stopPumpDistance = distance
+    global stopPumpslave_id = slave_id
+    stopPumpThreadHandles[rq_slave_id_to_index(slave_id)] = run stopPumpOnDistanceTravelled()
+    waitForStopPumpOnDistanceTravelledThreadStarted(slave_id)
+    return stopPumpThreadHandles[rq_slave_id_to_index(slave_id)]
+  end
+  
+  def waitForStopPumpOnDistanceTravelledThreadStarted(slave_id=9):
+    while (not(stopPumpThreadStarted[rq_slave_id_to_index(slave_id)])):
+      sleep(0.008)
+    end
+  end
+  
+  def stopStopPumpOnDistanceTravelledThread(slave_id=9):
+    handle = stopPumpThreadHandles[rq_slave_id_to_index(slave_id)]
+    threadIsRunning = stopPumpThreadStarted[rq_slave_id_to_index(slave_id)]
+    if (threadIsRunning):
+      kill handle
+      stopPumpThreadHandles[rq_slave_id_to_index(slave_id)] = 0
+    end
+  end
+  #################################################
+  # End - Stops the pump on a distance travelled
+  #################################################
+  
+  #################################################
+  # Vacuum general functions
+  #################################################
+  def rq_wait_for_vacuum_object_detected(slave_id=9):
+      while (not rq_is_vacuum_obj_detected_by_slave_id(slave_id)):
+          if (rq_is_vacuum_timeout(slave_id)):
+              return False
+          end
+          sleep(0.008)
+      end
+      return True
+  end
+  
+  def rq_wait_for_vacuum_object_secured(slave_id=9):
+      while (not rq_is_vacuum_obj_secured(slave_id)):
+          if (rq_is_vacuum_timeout(slave_id)):
+              return False
+          end
+          sleep(0.008)
+      end
+      return True
+  end
+  
+  def rq_wait_for_vacuum_object_suction_complete(slave_id=9):
+      remaining_retries = 50
+  
+       # Wait for suction started
+      while (not rq_is_vacuum_obj_in_suction(slave_id) and
+             not rq_is_vacuum_obj_detected_by_slave_id(slave_id) and
+             remaining_retries > 0):
+          sleep(0.01)
+          remaining_retries = remaining_retries - 1
+      end
+  
+      # Wait for suction completed
+      while (rq_is_vacuum_obj_in_suction(slave_id)):
+          if (rq_is_vacuum_timeout(slave_id)):
+              return False
+          end
+          sleep(0.01)
+      end
+  
+      return True
+  end
+  
+  def rq_wait_for_vacuum_object_not_detected(slave_id=9):
+      while (rq_is_vacuum_obj_detected_by_slave_id(slave_id)):
+          sleep(0.01)
+      end
+  end
+  
+  def rq_is_vacuum_obj_detected_by_slave_id(slave_id=9):
+      gOBJ = driver_gripper_client.getObjectDetectionFlag(slave_id)
+      return is_vacuum_OBJ_object_detected(gOBJ)
+  end
+  
+  def rq_is_vacuum_obj_detected(gripper_socket="1"):
+      slave_id = gripper_socket_to_slave_id(gripper_socket)
+      return rq_is_vacuum_obj_detected_by_slave_id(slave_id)
+  end
+  
+  def rq_is_vacuum_obj_secured(slave_id=9):
+      gOBJ = driver_gripper_client.getObjectDetectionFlag(slave_id)
+      return is_vacuum_OBJ_object_secured(gOBJ)
+  end
+  
+  def rq_is_vacuum_obj_in_suction(slave_id=9):
+      gOBJ = driver_gripper_client.getObjectDetectionFlag(slave_id)
+      return is_vacuum_OBJ_object_in_motion(gOBJ)
+  end
+  
+  def rq_is_vacuum_timeout(slave_id=9):
+      gFLT = driver_gripper_client.getFault(slave_id)
+      return gFLT == 6
+  end
+  
+  def is_vacuum_OBJ_object_in_motion(gOBJ):
+      return gOBJ == 0
+  end
+  
+  def is_vacuum_OBJ_object_detected(gOBJ):
+      return gOBJ == 1 or gOBJ == 2
+  end
+  
+  def is_vacuum_OBJ_object_secured(gOBJ):
+      return gOBJ == 2
+  end
+  
+  def rq_set_vacuum_and_wait(pressure, timeout, minimum, advanced_mode, slave_id=9):
+      driver_gripper_client.configureVacuum(slave_id, advanced_mode, pressure, minimum, timeout)
+  end
+  
+  def is_continuous_grip(maximum_vacuum):
+    return maximum_vacuum == 0
+  end
+  
+  def rq_vacuum_release(advanced_mode=False, shutoff_distance_cm=5, wait_for_object_released=True, gripper_socket="1"):
+    rq_wait_for_gripper_reconnection()
+    local slave_id = gripper_socket_to_slave_id(gripper_socket)
+    local shutoff_distance = scale(shutoff_distance_cm, [0, 99], [0.00, 0.99])
+    local pressure = 255
+    local minimum = 0
+    local timeout = 255
+    rq_vacuum_release_raw(advanced_mode, pressure, minimum, timeout, shutoff_distance, wait_for_object_released, slave_id)
+  end
+  
+  def rq_vacuum_release_raw(advanced_mode, pressure, minimum, timeout, shutoff_distance, wait_for_object_released, slave_id):
+    rq_reset_fault_and_activate(slave_id)
+  
+    if advanced_mode:
+      rq_set_vacuum_and_wait(pressure, timeout, minimum, 1, slave_id)
+    else:
+      rq_set_vacuum_and_wait(pressure, timeout, minimum, 0, slave_id)
+    end
+  
+    # The following patch is for Robotiq's Camera issue when communication is lost, but not the activation
+    # the communication driver reset the GTO bit
+    driver_gripper_client.goto(slave_id, 1)
+  
+    if wait_for_object_released:
+      while (rq_is_vacuum_obj_detected_by_slave_id(slave_id)):
+  
+        if advanced_mode:
+          rq_set_vacuum_and_wait(pressure, timeout, minimum, 1, slave_id)
+        else:
+          rq_set_vacuum_and_wait(pressure, timeout, minimum, 0, slave_id)
+        end
+  
+        # The following patch is for Robotiq's Camera issue when communication is lost, but not the activation
+        # the communication driver reset the GTO bit
+        driver_gripper_client.goto(slave_id, 1)
+        sleep(0.01)
+      end
+    end
+  
+    if advanced_mode:
+      startStopPumpOnDistanceTravelledThread(shutoff_distance, slave_id)
+    end
+  end
+  
+  def rq_vacuum_grip(advanced_mode=False, maximum_vacuum=60, minimum_vacuum=40, timeout_ms=3000, wait_for_object_detected=True, gripper_socket="1"):
+    rq_wait_for_gripper_reconnection()
+    local slave_id = gripper_socket_to_slave_id(gripper_socket)
+    local pressure = floor(scale(maximum_vacuum, [0, 100], [100, 0]))
+    local minimum = floor(scale(minimum_vacuum, [0, 100], [100, 0]))
+    local timeout = floor(scale(timeout_ms, [0, 25500], [0, 255]))
+    rq_vacuum_grip_raw(advanced_mode, pressure, minimum, timeout, slave_id)
+    if wait_for_object_detected:
+          suction_completed = rq_wait_for_vacuum_object_suction_complete(slave_id)
+          if(not suction_completed):
+            driver_gripper_client.goto(slave_id, 0)
+          end
+    end
+  end
+  
+  def rq_vacuum_grip_raw(advanced_mode, pressure, minimum, timeout, slave_id):
+    stopStopPumpOnDistanceTravelledThread(slave_id)
+    rq_reset_fault_and_activate(slave_id)
+  
+    if advanced_mode:
+      rq_set_vacuum_and_wait(pressure, timeout, minimum, 1, slave_id)
+    else:
+      rq_set_vacuum_and_wait(pressure, timeout, minimum, 0, slave_id)
+    end
+  
+    driver_gripper_client.goto(slave_id, 1)
+  end
+  
+  def is_FLT_no_fault(gFLT):
+      return gFLT == 0
+  end
+  
+  def is_FLT_vacuum_timeout(gFLT):
+    return gFLT == 6
+  end
+  
+  def is_FLT_faulted(gFLT):
+      return gFLT >= 8
+  end
+  
+  def rq_reset_fault_and_activate(slave_id):
+      gFLT = driver_gripper_client.getFault(slave_id)
+  
+      if(not is_FLT_no_fault(gFLT)):
+          if(is_FLT_vacuum_timeout(gFLT)):
+              driver_gripper_client.goto(slave_id, 0)
+          elif(is_FLT_faulted(gFLT)):
+              driver_gripper_client.goto(slave_id, 0)
+              driver_gripper_client.activate([slave_id], True)
+          end
+      elif(not rq_is_gripper_activated(slave_id)):
+          driver_gripper_client.goto(slave_id, 0)
+          driver_gripper_client.activate([slave_id], False)
+      end
+  end
+  #################################################
+  # End - Vacuum general functions
+  #################################################
+    def scale(value, rawRange, scaledRange):
+        def computeSlope(inputRange, outputRange):
+            outputRangeDelta = outputRange[1] - outputRange[0]
+            inputRangeDelta = inputRange[1] - inputRange[0]
+
+            if (inputRangeDelta == 0):
+                return 0
+            else:
+                return outputRangeDelta / inputRangeDelta
+            end
+        end
+
+        def computeIntercept(slope, inputRange, outputRange):
+            return outputRange[0] - (slope * inputRange[0])
+        end
+
+        def clipScaledValue(outputScaledValue, outputRange):
+            if (outputRange[0] < outputRange[1]):
+                return clipWhenLowerLimitIsLessThanHigher(outputScaledValue, outputRange)
+            else:
+                return clipWhenLowerLimitIsGreaterThanHigherLimit(outputScaledValue, outputRange)
+            end
+        end
+
+        def clipWhenLowerLimitIsGreaterThanHigherLimit(outputScaledValue, outputRange):
+            if (outputScaledValue < outputRange[1]):
+                return outputRange[1]
+            elif (outputScaledValue > outputRange[0]):
+                return outputRange[0]
+            else:
+                return outputScaledValue
+            end
+        end
+
+        def clipWhenLowerLimitIsLessThanHigher(outputScaledValue, outputRange):
+            if (outputScaledValue < outputRange[0]):
+                return outputRange[0]
+            elif (outputScaledValue > outputRange[1]):
+                return outputRange[1]
+            else:
+                return outputScaledValue
+            end
+        end
+
+        slope = computeSlope(rawRange, scaledRange)
+        intercept = computeIntercept(slope, rawRange, scaledRange)
+        scaledValue = slope * value + intercept
+        return clipScaledValue(scaledValue, scaledRange)
+    end
+
+    def limit(value, range):
+        return scale(value, range, range)
+    end
+
+  vacuumGripCheckWarningTitle = "진공 그립 점검"
+  vacuumGripCheckWarningMessage = "진공 그립퍼 오브젝트 분실"
+  vacuumGripTimeoutTitle = "진공 그립퍼 결함"
+  vacuumGripTimeoutMessage = "그립 시간을 초과했습니다"
+  # end: URCap Installation Node
+  # begin: URCap Installation Node
+  #   Source: Robotiq_Wrist_Camera, 3.8.0.84100, Robotiq Inc.
+  #   Type: Camera
+  
+  ###########################################
+  #######Vision urcap preamble start########
+  
+  logging_service = rpc_factory("xmlrpc","http://127.0.0.1:4747")
+  # Converts a pose relative to the flange in the base frame.
+  def get_T_in_base_from_flange(T_x_in_flange):
+  
+    T_flange_in_base = get_actual_tool_flange_pose()
+  
+    T_x_in_base = pose_trans(T_flange_in_base, T_x_in_flange)
+  
+    return T_x_in_base
+  end
+  
+  # Search pose cartesian (camera pose)
+  T_camera_in_flange = p[0.0, 0.05, 0.05, -0.5, 0.0, 0.0]
+  snapshot_position_offset = p[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  ignore_snapshot_position = False
+  canSaveImage = False
+  
+  # Open connection with vision service
+  xmlrpc_server=rpc_factory("xmlrpc","http://127.0.0.1:4242")
+  
+  # Open connection with visual offset monitor
+  cam_locate_monitor=rpc_factory("xmlrpc","http://127.0.0.1:37097")
+  
+  # Open connection with visual offset monitor
+  visual_offset_monitor=rpc_factory("xmlrpc","http://127.0.0.1:39321")
+  
+  #######Vision urcap preamble end##########
+  ###########################################
+  
+  # end: URCap Installation Node
+  # begin: URCap Installation Node
+  #   Source: Robotiq_Grippers, 3.27.0.122343, Robotiq Inc.
+  #   Type: 그리퍼
+  RQ_UNIT_PERCENT = 0
+  RQ_UNIT_MM = 1
+  RQ_UNIT_INCH = 2
+  
+  global gripper_reconnecting = False
+  rq_current_limit_enabled = False
+  gripper_closed_norm = [100, 100, 100, 100]
+  gripper_open_norm = [0, 0, 0, 0]
+  gripper_closed_mm = [0, 0, 0, 0]
+  gripper_open_mm = [50, 50, 50, 50]
+  
+  driver_gripper_client = rpc_factory("xmlrpc","http://127.0.0.1:63353")
+  
+  def rq_set_force_norm(force_norm, gripper_socket="1"):
+      rq_wait_for_gripper_reconnection()
+      slave_id = gripper_socket_to_slave_id(gripper_socket)
+      rq_set_force_norm_multi_grippers(force_norm, [slave_id])
+  end
+  
+  def rq_set_force_norm_multi_grippers(force_norm, slave_ids=[9]):
+      driver_gripper_client.setForce(slave_ids, force_norm)
+  end
+  
+  def rq_set_speed_norm(speed_norm, gripper_socket="1"):
+      rq_wait_for_gripper_reconnection()
+      slave_id = gripper_socket_to_slave_id(gripper_socket)
+      rq_set_speed_norm_multi_grippers(speed_norm, [slave_id])
+  end
+  
+  def rq_set_speed_norm_multi_grippers(speed_norm, slave_ids=[9]):
+      driver_gripper_client.setSpeed(slave_ids, speed_norm)
+  end
+  
+  def rq_open_and_wait(gripper_socket="1"):
+      rq_wait_for_gripper_reconnection()
+      slave_id = gripper_socket_to_slave_id(gripper_socket)
+      driver_gripper_client.openGripper(slave_id)
+      rq_wait_for_motion_complete([slave_id])
+  end
+  
+  def rq_close_and_wait(gripper_socket="1"):
+      rq_wait_for_gripper_reconnection()
+      slave_id = gripper_socket_to_slave_id(gripper_socket)
+      driver_gripper_client.closeGripper(slave_id)
+      rq_wait_for_motion_complete([slave_id])
+  end
+  
+  def rq_move_norm_multi_grippers(position, slave_ids=[9]):
+     # rq_wait_for_gripper_reconnection fucntion is not called here because it is already done in the gripper contribution
+     # script and this function is not defined for public usage.
+     all_gripper_limits = get_all_gripper_limits(slave_ids)
+     driver_gripper_client.move(slave_ids, position, RQ_UNIT_PERCENT, all_gripper_limits)
+  end
+  
+  def rq_move_and_wait_norm_multi_grippers(position, slave_ids=[9]):
+       all_gripper_limits = get_all_gripper_limits(slave_ids)
+       driver_gripper_client.move(slave_ids, position, RQ_UNIT_PERCENT, all_gripper_limits)
+       rq_wait_for_motion_complete(slave_ids)
+  end
+  
+  def rq_move_and_wait(position, unit, gripper_socket="1"):
+     rq_wait_for_gripper_reconnection()
+     slave_id = gripper_socket_to_slave_id(to_str(gripper_socket))
+     all_gripper_limits = get_all_gripper_limits([slave_id])
+     driver_gripper_client.move([slave_id], position, unit, all_gripper_limits)
+     rq_wait_for_motion_complete([slave_id])
+  end
+  
+  def rq_move_and_wait_norm(position, gripper_socket="1"):
+      rq_move_and_wait(position, RQ_UNIT_PERCENT, gripper_socket)
+  end
+  
+  def rq_move_and_wait_mm(position, gripper_socket="1"):
+      rq_move_and_wait(position, RQ_UNIT_MM, gripper_socket)
+  end
+  
+  def rq_move_and_wait_inches(position, gripper_socket="1"):
+     rq_move_and_wait(position, RQ_UNIT_INCH, gripper_socket)
+  end
+  
+  def rq_is_object_detected(gripper_socket="1"):
+     slave_id = gripper_socket_to_slave_id(gripper_socket)
+     return driver_gripper_client.isObjectDetected(slave_id)
+  end
+  
+  def rq_current_pos_norm(gripper_socket="1"):
+      slave_id = gripper_socket_to_slave_id(gripper_socket)
+      gripper_limits = get_gripper_limits(gripper_socket)
+      return driver_gripper_client.getCurrentPosition(slave_id,
+                                    RQ_UNIT_PERCENT,
+                                    gripper_limits[0],
+                                    gripper_limits[1],
+                                    gripper_limits[2],
+                                    gripper_limits[3])
+  end
+  
+  def rq_current_pos_mm(gripper_socket=1):
+      slave_id = gripper_socket_to_slave_id(to_str(gripper_socket))
+      gripper_limits = get_gripper_limits(to_str(gripper_socket))
+      return driver_gripper_client.getCurrentPosition(slave_id,
+                                    RQ_UNIT_MM,
+                                    gripper_limits[0],
+                                    gripper_limits[1],
+                                    gripper_limits[2],
+                                    gripper_limits[3])
+  end
+  
+  def rq_current_pos_inches(gripper_socket=1):
+      slave_id = gripper_socket_to_slave_id(to_str(gripper_socket))
+      gripper_limits = get_gripper_limits(to_str(gripper_socket))
+      return driver_gripper_client.getCurrentPosition(slave_id,
+                                    RQ_UNIT_INCH,
+                                    gripper_limits[0],
+                                    gripper_limits[1],
+                                    gripper_limits[2],
+                                    gripper_limits[3])
+  end
+  
+  def rq_reset(gripper_socket="1"):
+      slave_id = gripper_socket_to_slave_id(gripper_socket)
+      driver_gripper_client.deactivate([slave_id])
+  end
+  
+  def rq_set_gripper_max_cur(current_mA, gripper_socket="1"):
+      rq_wait_for_gripper_reconnection()
+      slave_id = gripper_socket_to_slave_id(gripper_socket)
+      driver_gripper_client.setMaximumCurrent(current_mA, slave_id)
+  end
+  
+  def rq_get_gripper_max_cur(gripper_socket="1"):
+      slave_id = gripper_socket_to_slave_id(gripper_socket)
+      return driver_gripper_client.getMaximumCurrent(slave_id)
+  end
+  
+  def rq_set_max_current_for_all_grippers():
+      rq_wait_for_gripper_reconnection()
+      driver_gripper_client.setMaximumCurrentOnAllGrippers(rq_current_limit_enabled)
+  end
+  
+  def rq_is_gripper_activated(slave_id=9):
+      return driver_gripper_client.isGripperActivated(slave_id)
+  end
+  
+  def rq_is_gripper_connected(slave_id=9):
+      return driver_gripper_client.isGripperConnected(slave_id)
+  end
+  
+  def rq_get_fault(slave_id=9):
+      return driver_gripper_client.getFault(slave_id)
+  end
+  
+  def rq_activate_and_wait(gripper_socket="1"):
+      slave_id = gripper_socket_to_slave_id(gripper_socket)
+      if (not rq_is_gripper_activated(slave_id)):
+        driver_gripper_client.activate([slave_id], False)
+      end
+  end
+  
+  def rq_activate_all_grippers(reset=False):
+      empty_array_used_to_act_on_all_grippers = []
+      if (reset):
+        driver_gripper_client.activate(empty_array_used_to_act_on_all_grippers, True)
+      else:
+        driver_gripper_client.activateIfRequired(empty_array_used_to_act_on_all_grippers)
+      end
+  end
+  
+  def get_closed_norm(gripper_socket):
+      return gripper_closed_norm[rq_gripper_socket_to_index(gripper_socket)]
+  end
+  
+  def get_open_norm(gripper_socket):
+      return gripper_open_norm[rq_gripper_socket_to_index(gripper_socket)]
+  end
+  
+  def get_open_mm(gripper_socket):
+      return gripper_open_mm[rq_gripper_socket_to_index(gripper_socket)]
+  end
+  
+  def get_closed_mm(gripper_socket):
+      return gripper_closed_mm[rq_gripper_socket_to_index(gripper_socket)]
+  end
+  
+  def set_closed_norm(closed_norm, gripper_socket):
+      gripper_closed_norm[rq_gripper_socket_to_index(gripper_socket)] = closed_norm
+  end
+  
+  def set_open_norm(open_norm, gripper_socket):
+      gripper_open_norm[rq_gripper_socket_to_index(gripper_socket)] = open_norm
+  end
+  
+  def set_closed_mm(closed_mm, gripper_socket):
+      gripper_closed_mm[rq_gripper_socket_to_index(gripper_socket)] = closed_mm
+  end
+  
+  def set_open_mm(opened_mm, gripper_socket):
+      gripper_open_mm[rq_gripper_socket_to_index(gripper_socket)] = opened_mm
+  end
+  
+  def slave_id_to_gripper_socket(slave_id):
+      if slave_id == 9:
+          return "1"
+      else:
+          return to_str(slave_id)
+      end
+  end
+  
+  def gripper_socket_to_slave_id(gripper_socket):
+      if gripper_socket == "1":
+          return 9
+      else:
+          return to_num(gripper_socket)
+      end
+  end
+  
+  def rq_slave_id_to_index(slave_id):
+      if slave_id == 9:
+          return 0
+      else:
+          return slave_id - 1
+      end
+  end
+  
+  def rq_gripper_socket_to_index(gripper_socket):
+      return to_num(gripper_socket) - 1
+  end
+  
+  def get_all_gripper_limits(slave_ids):
+     all_gripper_limits = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+     nb_slave_ids = get_list_length(slave_ids)
+     slave_id_index = 0
+     index = 0
+     sub_index = 0
+     while (index < nb_slave_ids):
+         slave_id_index = 0
+         items_per_limit = 4
+         gripper_socket = slave_id_to_gripper_socket(slave_ids[index])
+         gripper_limits = get_gripper_limits(gripper_socket)
+         while (sub_index < items_per_limit):
+            all_gripper_limits[index] = gripper_limits[sub_index]
+            sub_index = sub_index + 1
+            index = index + 1
+         end
+         index = index + 1
+     end
+  
+     return all_gripper_limits
+  end
+  
+  def get_gripper_limits(gripper_socket):
+      return [get_closed_norm(gripper_socket),
+              get_open_norm(gripper_socket),
+              get_closed_mm(gripper_socket),
+              get_open_mm(gripper_socket)]
+  end
+  
+  def rq_wait_for_motion_complete(slave_ids):
+      nb_slave_ids = get_list_length(slave_ids)
+      index = 0
+      while (index < nb_slave_ids):
+        rq_wait(slave_ids[index])
+        index = index + 1
+      end
+  end
+  
+  def rq_stop(gripper_socket="1"):
+      slave_id = gripper_socket_to_slave_id(gripper_socket)
+      driver_gripper_client.goto(slave_id, 0)
+  end
+  
+  def rq_wait(slave_id):
+      # Wait for the gripper motion to complete
+      while (not rq_is_motion_complete(slave_id)):
+          # The following patch is for Robotiq's Camera issue when communication is lost, but not the activation
+          # the communication driver reset the GTO bit
+          driver_gripper_client.goto(slave_id, 1)
+          sleep(0.1)
+      end
+  end
+  
+  def rq_is_motion_complete(slave_id):
+      detection_flag = driver_gripper_client.getObjectDetectionFlag(slave_id)
+      return detection_flag > 0 and detection_flag < 4
+  end
+  
+  def write_error_popup(slave_id, message_part_1, message_part_2, title):
+      popup_message_part_1 = str_cat(message_part_1, rq_slave_id_to_gripper_id(slave_id))
+      popup_message_part_2 = str_cat(popup_message_part_1, " ")
+      popup_message = str_cat(popup_message_part_2, message_part_2)
+      return popup(popup_message, title, False, True, True)
+  end
+  
+  def rq_slave_id_to_gripper_id(slave_id):
+      if slave_id == 9:
+          return 1
+      else:
+          return slave_id
+      end
+  end
+  
+  def rq_disconnect_grippers():
+      driver_gripper_client.pauseAndDisconnect()
+  end
+  
+  def rq_reconnect_grippers(blocking=False, slave_ids=[], halt_on_error=True):
+      if blocking:
+          gripper_reconnecting = True
+          local reconnection_success = driver_gripper_client.reconnectAndResume(slave_ids)
+          gripper_reconnecting = False
+  
+          if (not reconnection_success and halt_on_error):
+            popup("Could not reconnect to grippers", error=True)
+            halt
+          else:
+            return reconnection_success
+          end
+      else:
+          thread recon_thread():
+              rq_reconnect_grippers(True)
+              return False
+          end
+          thrd = run recon_thread()
+      end
+  end
+  
+  def rq_wait_for_gripper_reconnection(timeout_s = 30.0):
+      while (gripper_reconnecting == True):
+          if (timeout_s <= 0):
+            popup("Gripper has not reconnected before the expected time")
+            halt
+          else:
+            sync()
+            timeout_s = timeout_s - get_steptime()
+          end
+      end
+  end
+  
+  def rq_gripper_allow_tool_com(allow_tool_comm):
+      driver_gripper_client.allowToolComm(allow_tool_comm)
+  end
+  set_closed_norm(100.0, "1")
+  set_open_norm(0.0, "1")
+  set_closed_mm(0.0, "1")
+  set_open_mm(50.0, "1")
+  set_closed_norm(100.0, "2")
+  set_open_norm(0.0, "2")
+  set_closed_mm(0.0, "2")
+  set_open_mm(50.0, "2")
+  set_closed_norm(100.0, "3")
+  set_open_norm(0.0, "3")
+  set_closed_mm(0.0, "3")
+  set_open_mm(50.0, "3")
+  set_closed_norm(100.0, "4")
+  set_open_norm(0.0, "4")
+  set_closed_mm(0.0, "4")
+  set_open_mm(50.0, "4")
+  rq_current_limit_enabled = False
+  # end: URCap Installation Node
+  step_count_130953d2_dc51_49c5_a979_418415d1e2ed = 0.0
+  thread Step_Counter_Thread_19553da5_9159_456b_895f_79f969f59f6d():
+    while (True):
+      step_count_130953d2_dc51_49c5_a979_418415d1e2ed = step_count_130953d2_dc51_49c5_a979_418415d1e2ed + 1.0
+      sync()
+    end
+  end
+  run Step_Counter_Thread_19553da5_9159_456b_895f_79f969f59f6d()
+  while (True):
+    $ 2 "로봇 프로그램"
+    # begin: URCap Program Node
+    #   Source: Robotiq_Grippers, 3.27.0.122343, Robotiq Inc.
+    #   Type: 그리퍼
+    $ 3 "그리퍼 이동50% (1)"
+    gripper_slave_ids_0 = [9]
+    popupErrorGripperWord = "그리퍼"
+    popupErrorNoConnection1 = "이(가) 연결되어야 이 프로그램이 실행됩니다."
+    popupErrorNoConnection2 = "연결 없음"
+    popupErrorNotActivated1 = "이(가) 활성화되지 않았습니다. 설치 탭 > 그리퍼로 이동하여 활성화한 다음 프로그램을 다시 실행하십시오."
+    popupErrorNotActivated2 = "활성화되지 않음"
+    rq_gripper_speed = 100.0
+    rq_gripper_force = 20.0
+    rq_gripper_position = 50.0
+    rq_is_blocking = True
+    rq_is_robot_compliant = False
+    nb_slave_ids = get_list_length(gripper_slave_ids_0)
+    rq_wait_for_gripper_reconnection()
+    index = 0
+    while (index < nb_slave_ids):
+        rq_slave_id = gripper_slave_ids_0[index]
+        if (not rq_is_gripper_connected(rq_slave_id)):
+            write_error_popup(rq_slave_id, popupErrorGripperWord, popupErrorNoConnection1, popupErrorNoConnection2)
+        end
+        index = index + 1
+    end
+    index = 0
+    while (index < nb_slave_ids):
+        rq_slave_id = gripper_slave_ids_0[index]
+        if (not rq_is_gripper_activated(rq_slave_id)):
+            write_error_popup(rq_slave_id, popupErrorGripperWord, popupErrorNotActivated1, popupErrorNotActivated2)
+        end
+        index = index + 1
+    end
+    rq_set_speed_norm_multi_grippers(rq_gripper_speed, gripper_slave_ids_0)
+    rq_set_force_norm_multi_grippers(rq_gripper_force, gripper_slave_ids_0)
+    if (rq_is_blocking):
+        if rq_is_robot_compliant:
+            zero_ftsensor()
+            sleep(0.02)
+            # Maximum allowed deviation values for non-compliant axes are default values generated by UR in a Force node
+            force_mode(tool_pose(), [1, 1, 0, 0, 0, 0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 2, [0.15, 0.15, 0.1, 0.3490658503988659, 0.3490658503988659, 0.3490658503988659])
+        end
+        rq_move_and_wait_norm_multi_grippers(rq_gripper_position, gripper_slave_ids_0)
+        if rq_is_robot_compliant:
+            end_force_mode()
+        end
+    else:
+        rq_move_norm_multi_grippers(rq_gripper_position, gripper_slave_ids_0)
+    end
+    # end: URCap Program Node
+  end
+end

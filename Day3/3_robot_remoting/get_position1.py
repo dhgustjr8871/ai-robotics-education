@@ -20,8 +20,8 @@ def print2(str, color=Color.YELLOW):
 PORT_PRIMARY_CLIENT = 30001
 PORT_SECONDARY_CLIENT = 30002
 
-server_ip = "192.168.0.18" 
-robot_ip = "192.168.0.15"
+server_ip = "192.168.1.8" 
+robot_ip = "192.168.1.6"
 script_path = "scripts/socket_get_position1.script"
 
 async def handle_client(reader, writer):
@@ -40,7 +40,7 @@ async def handle_client(reader, writer):
             if message == "current_pos":
                 print("receive and handle current_pos message")
                 p_ = await handle_pos_data(reader)
-                print2(f"p_: {p_}", Color.GREEN)
+                print2(f"p_: {p_}", Color.CYAN)
 
 
             writer.write(data)  # Echo back the received message
@@ -58,8 +58,8 @@ async def handle_pos_data(reader):
     data = await reader.readexactly(24)
     # Unpack the 6 short integers from the received data
     print("position data:", data)
-    integers_data = struct.unpack('>iiiiii', data)
-    actual_pos_data = [x/10000 for x in integers_data]
+    integers_data = struct.unpack('>iiiiii', data) # 24바이트의 데이터를 6개의 int 데이터 배열로 변환
+    actual_pos_data = [x/10000 for x in integers_data] # scale the integers to actual position values
 
     return actual_pos_data
 

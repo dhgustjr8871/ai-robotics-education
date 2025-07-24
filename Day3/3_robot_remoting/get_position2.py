@@ -20,8 +20,8 @@ def print2(str, color=Color.YELLOW):
 PORT_PRIMARY_CLIENT = 30001
 PORT_SECONDARY_CLIENT = 30002
 
-server_ip = "192.168.0.18"
-robot_ip = "192.168.0.15"
+server_ip = "192.168.1.8"
+robot_ip = "192.168.1.6"
 script_path = "scripts/socket_get_position2.script"
 
 async def handle_client(reader, writer):
@@ -33,7 +33,9 @@ async def handle_client(reader, writer):
             data = await reader.read(1024)
             if not data:
                 break
+            print(data)
             message = data.decode('utf-8').rstrip()  # Remove trailing newline
+
 
             print(f"Received from {addr}: {message}")
 
@@ -44,11 +46,12 @@ async def handle_client(reader, writer):
                 q_ = await handle_pos_data(reader)
                 print2(f"q_: {q_}", Color.GREEN)
 
-
             writer.write(data)  # Echo back the received message
             await writer.drain()
     except asyncio.CancelledError:
         pass
+    except ConnectionResetError:
+        print(f"Connection with {addr} reset")
     finally:
         print(f"Connection with {addr} closed")
         writer.close()

@@ -1,5 +1,5 @@
 def socket_set_position1():
-    server_ip = "192.168.0.18"
+    server_ip = "192.168.1.8"
     port = 12345
     socket_open(server_ip,port,"socket_0")
 
@@ -9,6 +9,7 @@ def socket_set_position1():
     #p_rel = p[0,0,0.05,0,0,0]
     p_rel = p[buf[1],buf[2],buf[3],buf[4],buf[5],buf[6]]
     socket_close("socket_0")
+    sleep(0.1)
 
     q_=get_actual_joint_positions()
     p_ready=get_forward_kin(q=q_,tcp=p_rel)

@@ -20,8 +20,8 @@ def print2(str, color=Color.YELLOW):
 PORT_PRIMARY_CLIENT = 30001
 PORT_SECONDARY_CLIENT = 30002
 
-server_ip = "192.168.0.18"
-robot_ip = "192.168.0.15"
+server_ip = "192.168.1.8"
+robot_ip = "192.168.1.6"
 script_path = "scripts/socket_set_position1.script"
 
 async def handle_client(reader, writer):
@@ -51,11 +51,14 @@ async def handle_client(reader, writer):
                 await writer.drain()
     except asyncio.CancelledError:
         pass
-    except Exception as e:
-        print("Error:", e)
+    except ConnectionResetError:
+        print(f"Connection with {addr} reset")
+    # except Exception as e:
+    #     print("Error:", e)
     finally:
         print(f"Connection with {addr} closed")
         writer.close()
+        # await writer.wait_closed()
 
 
 async def handle_pos_data(reader):
@@ -69,7 +72,7 @@ async def handle_pos_data(reader):
 
     return actual_pos_data
 
-async def main(host='127.0.0.1', port=12345):
+async def main(host='0.0.0.0', port=12345):
     server = await asyncio.start_server(handle_client, host, port)
     addr = server.sockets[0].getsockname()
     print(f"Server listening on {addr}")

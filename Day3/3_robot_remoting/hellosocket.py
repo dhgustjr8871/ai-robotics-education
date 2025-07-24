@@ -26,7 +26,7 @@ async def handle_client(reader, writer):
         print(f"Connection with {addr} closed")
         writer.close()
 
-async def main(host='127.0.0.1', port=12345):
+async def main(host='0.0.0.0', port=12345):
     server = await asyncio.start_server(handle_client, host, port)
     addr = server.sockets[0].getsockname()
     print(f"Server listening on {addr}")
