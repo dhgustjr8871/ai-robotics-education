@@ -1,11 +1,23 @@
 from ultralytics import YOLO
 
-# Load an official or custom model
-#model = YOLO("yolo11n.pt")  # Load an official Detect model
-#model = YOLO("yolo11n-seg.pt")  # Load an official Segment model
-model = YOLO("yolo11n-pose.pt")  # Load an official Pose model
-#model = YOLO("path/to/best.pt")  # Load a custom trained model
+if __name__ == "__main__":
+	# Load a pretrained YOLO11n model
+	model = YOLO("yolo11n.yaml")
 
-# Perform tracking with the model
-results = model.track("https://youtu.be/LNwODJXcvt4", show=True)  # Tracking with default tracker
-results = model.track("https://youtu.be/LNwODJXcvt4", show=True, tracker="bytetrack.yaml")  # with ByteTrack
+	# Train the model on the COCO8 dataset for 100 epochs
+	train_results = model.train(
+		data="coco128.yaml",  # Path to dataset configuration file
+		epochs=200,  # Number of training epochs
+		imgsz=640,  # Image size for training
+		device=0,  # Device to run on (e.g., 'cpu', 0, [0,1,2,3])
+	)
+
+	# Evaluate the model's performance on the validation set
+	metrics = model.val()
+
+	# Perform object detection on an image
+	results = model(r"C:\portal_learn\ai-robotics-education\b35da3db-c40f-4968-a94a-34ae8d4ed07c.jpg")  # Predict on an image
+	results[0].show()  # Display results
+
+	# Export the model to ONNX format for deployment
+	path = model.export(format="onnx")  # Returns the path to the exported model
