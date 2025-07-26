@@ -12,11 +12,7 @@ edges = cv2.Canny(blur, 50, 150)
 # 3. 컨투어 추출
 contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-# 4. 컨투어 그리기
-img_contour = img.copy()
-cv2.drawContours(img_contour, contours, -1, (0, 128, 255), 2)  # 주황색
-
-# 5. Bounding Box 및 Rotated Bounding Box 그리기
+# 4. Bounding Box 및 Rotated Bounding Box 그리기
 img_bbox = img.copy()
 for contour in contours:
     # 일반 bounding box (빨간색)
@@ -29,9 +25,8 @@ for contour in contours:
     box = box.astype(int)
     cv2.drawContours(img_bbox, [box], 0, (0, 255, 0), 2)
 
-# 6. RGB 변환
+# 5. RGB 변환
 img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-img_contour_rgb = cv2.cvtColor(img_contour, cv2.COLOR_BGR2RGB)
 img_bbox_rgb = cv2.cvtColor(img_bbox, cv2.COLOR_BGR2RGB)
 
 # 7. 시각화 (subplot)
