@@ -20,8 +20,8 @@ def print2(str, color=Color.YELLOW):
 PORT_PRIMARY_CLIENT = 30001
 PORT_SECONDARY_CLIENT = 30002
 
-server_ip = "192.168.1.8"
-robot_ip = "192.168.1.6"
+server_ip = "192.168.1.5"
+robot_ip = "192.168.1.4"
 script_path = "scripts/socket_set_position1.script"
 
 async def handle_client(reader, writer):
@@ -49,6 +49,7 @@ async def handle_client(reader, writer):
                 float_string = "({})\n".format(','.join(map(str, p_rel)))
                 writer.write(float_string.encode())
                 await writer.drain()
+            
     except asyncio.CancelledError:
         pass
     except ConnectionResetError:
