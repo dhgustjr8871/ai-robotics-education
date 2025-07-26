@@ -4,7 +4,6 @@ robot_url = "192.168.1.6"
 script = """
 def helloworld():
     popup("Happy learning!")
-    popup("ㅉㅉ")
 end
 """
 
