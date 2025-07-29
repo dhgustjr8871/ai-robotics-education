@@ -2,9 +2,23 @@
 
 해당 섹션에서는 YOLO를 이용하여 원하는 데이터를 학습할 수 있도록 주어진 데이터에 대한 전처리를 수행하는 과정을 설명하고자 합니다.
 
-우선 터미널 프롬프트에서 아래 명령어를 통해 Day3/1_python_basic 폴더로 이동하겠습니다. (해당 위치를 프로그램 실행/참조의 기준위치로 설정함)
+YOLO에 활용되는 데이터셋은 yaml파일로 데이터셋에 대한 정보를 저장합니다.
 
-    cd Day3/1_python_basic
+#### 예시:
+
+`datasets/guide_objects.yaml` 에 예시 yaml파일이 저장되어있습니다.
+
+```yaml
+train: ../train/images
+val: ../valid/images
+
+nc: 6
+names: ['circle', 'ring', 'square', 'rectangle', 'hexagon', 'oval']
+```
+
+`train`은 YOLO 학습과정에서 사용할 데이터셋을 의미합니다.
+`val`은 
+
 
 ## 1. python 기본 문법
 
