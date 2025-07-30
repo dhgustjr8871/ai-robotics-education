@@ -153,7 +153,7 @@ Clicked Pixel: (312, 254)
 | **Pitch** | 옆 방향 축을 기준으로 위아래로 기울임 (고개 끄덕이기) |
 | **Yaw**   | 위에서 보는 방향 기준 좌우 회전 (방향 바꾸기) |
 
-![Roll, Pitch, Yaw 축 방향 - 비행기 모델](Day4\2_3d_data\images\RollPitchYaw.svg)  
+![Roll, Pitch, Yaw 축 방향 - 비행기 모델](Day4\2_3d_data\images\RollPitchYaw.jpg)  
 출처: [Wikipedia - Aircraft principal axes](https://en.wikipedia.org/wiki/Aircraft_principal_axes)
 
 > **6DoF = 3D 위치 + 3D 방향**
