@@ -14,5 +14,7 @@ def socket_set_position1():
     q_=get_actual_joint_positions()
     p_ready=get_forward_kin(q=q_,tcp=p_rel)
 
+    textmsg(p_rel, p_ready)
+
     movej(p_ready, a=1.2, v=0.1, t=0, r=0.0)
 end
