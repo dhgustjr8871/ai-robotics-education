@@ -1,0 +1,154 @@
+import asyncio
+import socket
+import struct
+from math import cos, sin, pi
+import numpy as np
+
+
+class Color:
+    PURPLE = '\033[95m'
+    CYAN = '\033[96m'
+    DARKCYAN = '\033[36m'
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    END = '\033[0m'
+
+def print2(str, color=Color.YELLOW):
+    print(color, str, Color.END)
+
+PORT_PRIMARY_CLIENT = 30001
+PORT_SECONDARY_CLIENT = 30002
+
+server_ip = "192.168.1.5"
+robot_ip = "192.168.1.4"
+script_path = "scripts/socket_hexa.script"
+
+def get_hexagon_relative_pose(radius, index, num_points=6):
+    theta = 2 * pi * index / num_points
+    dx = radius * cos(theta)
+    dy = radius * sin(theta)
+    dz = 0.0
+
+    # 1. 벡터 정규화: [dx, dy, 1 - dz]
+    v = np.array([dx, dy, 0.5 - dz])
+    norm = np.linalg.norm(v)
+    vx, vy, vz = v / norm
+
+    # 2. 기준 z축 벡터
+    z_axis = np.array([0, 0, 1])
+    target_dir = np.array([vx, vy, vz])
+
+    # 3. 외적과 내적 계산
+    axis = np.cross(z_axis, target_dir)
+    dot_product = np.dot(z_axis, target_dir)
+
+    # 4. 각도 계산 (acos의 인자가 -1~1 범위 넘어가지 않도록 clip)
+    angle = np.arccos(np.clip(dot_product, -1.0, 1.0))
+
+    # 5. 회전 벡터 (axis * angle)
+    if np.linalg.norm(axis) == 0:
+        rx, ry, rz = 0.0, 0.0, 0.0
+    else:
+        axis = axis / np.linalg.norm(axis)
+        rx, ry, rz = - axis * angle
+
+    # rx, ry = 0.0, 0.0
+    # rz = 0.0
+
+    return [dx, dy, dz, rx, ry, rz]
+
+def generate_circle_poses(radius, num_points=6):
+    poses = []
+    # poses.append(get_hexagon_relative_pose(radius, 4, num_points))
+    for i in range(num_points):
+        poses.append(get_hexagon_relative_pose(radius, i, num_points))
+    # poses.append(get_hexagon_relative_pose(radius, 1, num_points))
+    poses.append([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])  # Add a neutral pose at the end
+    return poses
+
+async def handle_client(reader, writer):
+    addr = writer.get_extra_info('peername')
+    print(f"Connected by {addr}")
+    
+    try:
+        while True:
+            data = await reader.read(1024)
+            if not data:
+                break
+            message = data.decode('utf-8').rstrip()  # Remove trailing newline
+
+            print(f"Received from {addr}: {message}")
+
+            if message == "req_data":
+                print("Received data request")
+
+                poses = generate_circle_poses(0.15) 
+                for pose in poses:
+                    # print2(f"Sending pose: {pose}", Color.GREEN)
+                    float_string = "({})\n".format(','.join(map(str, pose)))
+                    # print(">>>", float_string.encode())
+                    writer.write(float_string.encode())
+                    await writer.drain()
+                    await asyncio.sleep(0.1)  # 다음 포즈 보내기 전 대기
+            
+    except asyncio.CancelledError:
+        pass
+    except ConnectionResetError:
+        print(f"Connection with {addr} reset")
+    # except Exception as e:
+    #     print("Error:", e)
+    finally:
+        print(f"Connection with {addr} closed")
+        writer.close()
+        # await writer.wait_closed()
+
+
+async def handle_pos_data(reader):
+    integers_data = []
+    # Receive 24 bytes (6 integers = 6 * 4 bytes = 24 bytes) 
+    data = await reader.readexactly(24)
+    # Unpack the 6 short integers from the received data
+    print("position data:", data)
+    integers_data = struct.unpack('>iiiiii', data)
+    actual_pos_data = [x/10000 for x in integers_data]
+
+    return actual_pos_data
+
+async def main(host='0.0.0.0', port=12345):
+    server = await asyncio.start_server(handle_client, host, port)
+    addr = server.sockets[0].getsockname()
+    print(f"Server listening on {addr}")
+    print("Sending script to the robot...")
+
+    await asyncio.sleep(0.1)
+    sendScriptFile(robot_ip, script_path, PORT_PRIMARY_CLIENT)
+
+    async with server:
+        await server.serve_forever()
+
+def getScriptFromPath(script_path):
+    with open(script_path, 'r') as file:
+        script = file.read()
+    return script
+
+def sendScript(robot_url, script, port=PORT_PRIMARY_CLIENT):
+    socketClient = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    socketClient.connect((robot_url, port))
+    socketClient.send((script + "\n").encode())
+    socketClient.close()
+
+def sendScriptFile(robot_url, script_path, port=PORT_PRIMARY_CLIENT):
+    script = getScriptFromPath(script_path)
+    sendScript(robot_url, script, port)
+
+
+
+if __name__ == "__main__":
+    try:
+        asyncio.run(main(host=server_ip))
+    except KeyboardInterrupt:
+        print("\nServer is shutting down...")
