@@ -38,8 +38,6 @@ async def update_camera():
     except Exception as e:
         print("Camera error:", e)
 
-
-
 class Color:
     PURPLE = '\033[95m'
     CYAN = '\033[96m'
