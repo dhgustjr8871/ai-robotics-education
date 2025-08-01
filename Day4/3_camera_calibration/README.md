@@ -54,7 +54,7 @@ Camera Calibration을 수행하기 위해서는 보정하고자 하는 이미지
 - `cv2.calibrateCamera()`: 체커보드를 이용하여 구한 3차원 좌표와 2차원 픽셀 좌표를 매칭시켜 intrinsic parameter들을 계산합니다.
 
 
-### ▶ 실행 결과
+#### 실행 결과
 
 - `camera_params\calibration_data` 폴더에 들어있는 사진들에 체커보드가 인식된 결과를 차례대로 표시
 - 구한 3차원 좌표와 2차원 좌표를 매핑하여 Intrinsic Parameter 출력
@@ -70,7 +70,7 @@ Camera Calibration을 수행하기 위해서는 보정하고자 하는 이미지
 - `cv2.undistort()`: 카메라의 Intrinsic parameter를 이용해 이미지를 보정합니다.
 
 
-### ▶ 실행 결과
+#### 실행 결과
 
 - `camera_params\undistorted` 폴더에 왜곡이 보정된 이미지들이 저장
 
