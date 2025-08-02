@@ -1,6 +1,11 @@
 import asyncio
 import socket
 import struct
+from math import pi
+import pyrealsense2 as rs
+import numpy as np
+import cv2
+
 
 class Color:
     PURPLE = '\033[95m'
@@ -22,7 +27,7 @@ PORT_SECONDARY_CLIENT = 30002
 
 server_ip = "192.168.1.5"
 robot_ip = "192.168.1.4"
-script_path = "scripts/socket_set_position1.script"
+script_path = "scripts/pose_init.script"
 
 async def handle_client(reader, writer):
     addr = writer.get_extra_info('peername')
@@ -37,19 +42,13 @@ async def handle_client(reader, writer):
 
             print(f"Received from {addr}: {message}")
 
-            if message == "current_pos":
-                print("Received position data request")
-                p_ = await handle_pos_data(reader)
-                print2(f"p_: {p_}", Color.GREEN)
-                q_ = await handle_pos_data(reader)
-                print2(f"q_: {q_}", Color.GREEN)
-            elif message == "req_data":
-                print("Received data request")
-                p_rel = [0.0, 0.1, 0.0, 0.0, 0.0, 0.0]
-                float_string = "({})\n".format(','.join(map(str, p_rel)))
+            if message == "initialize":
+                print("Received initialization request")
+                p_init = [90.000/180*pi, -90.000/180*pi, 90.000/180*pi, -90.000/180*pi, -90.000/180*pi, 0.000]
+                float_string = "({})\n".format(','.join(map(str, p_init)))
                 writer.write(float_string.encode())
                 await writer.drain()
-            
+
     except asyncio.CancelledError:
         pass
     except ConnectionResetError:
@@ -61,18 +60,6 @@ async def handle_client(reader, writer):
         writer.close()
         # await writer.wait_closed()
 
-
-async def handle_pos_data(reader):
-    integers_data = []
-    # Receive 24 bytes (6 integers = 6 * 4 bytes = 24 bytes) 
-    data = await reader.readexactly(24)
-    # Unpack the 6 short integers from the received data
-    print("position data:", data)
-    integers_data = struct.unpack('>iiiiii', data)
-    actual_pos_data = [x/10000 for x in integers_data]
-
-    return actual_pos_data
-
 async def main(host='0.0.0.0', port=12345):
     server = await asyncio.start_server(handle_client, host, port)
     addr = server.sockets[0].getsockname()
@@ -81,9 +68,11 @@ async def main(host='0.0.0.0', port=12345):
 
     await asyncio.sleep(0.1)
     sendScriptFile(robot_ip, script_path, PORT_PRIMARY_CLIENT)
+    #camera_task = asyncio.create_task(update_camera())
 
     async with server:
         await server.serve_forever()
+        #await camera_task
 
 def getScriptFromPath(script_path):
     with open(script_path, 'r') as file:
