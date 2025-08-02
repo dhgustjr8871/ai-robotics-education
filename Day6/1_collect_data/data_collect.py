@@ -3,6 +3,8 @@ import socket
 import struct
 from math import cos, sin, pi
 import numpy as np
+import pyrealsense2 as rs
+import cv2
 
 
 class Color:
@@ -70,6 +72,32 @@ def generate_circle_poses(radius, num_points=6):
     poses.append([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])  # Add a neutral pose at the end
     return poses
 
+pipeline = rs.pipeline()
+config = rs.config()
+config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
+pipeline.start(config)
+
+def capture_image(pipeline, filename="output.jpg"):
+    # Flush old frames (RealSense가 최신 프레임을 제공하도록 몇 장 버림)
+    for _ in range(5):
+        pipeline.wait_for_frames()
+    
+    # Capture the frame
+    frames = pipeline.wait_for_frames()
+    color_frame = frames.get_color_frame()
+
+    if not color_frame:
+        print("[ERROR] No color frame captured.")
+        return False
+
+    # Convert to numpy array
+    color_image = np.asanyarray(color_frame.get_data())
+
+    # Save the image
+    cv2.imwrite(filename, color_image)
+    print(f"[INFO] Image saved to: {filename}")
+    return True
+
 async def handle_client(reader, writer):
     addr = writer.get_extra_info('peername')
     print(f"Connected by {addr}")
@@ -88,13 +116,18 @@ async def handle_client(reader, writer):
 
                 poses = generate_circle_poses(0.15) 
                 for pose in poses:
-                    # print2(f"Sending pose: {pose}", Color.GREEN)
+                    print2(f"Sending pose: {pose}", Color.GREEN)
                     float_string = "({})\n".format(','.join(map(str, pose)))
                     # print(">>>", float_string.encode())
                     writer.write(float_string.encode())
                     await writer.drain()
                     await asyncio.sleep(0.1)  # 다음 포즈 보내기 전 대기
-            
+
+                    data = await reader.read(1024)
+                    message = data.decode('utf-8').rstrip()
+                    if message == "reached":
+                        capture_image(pipeline, f"img_pose_{poses.index(pose)}.jpg")
+                    
     except asyncio.CancelledError:
         pass
     except ConnectionResetError:
@@ -144,7 +177,6 @@ def sendScript(robot_url, script, port=PORT_PRIMARY_CLIENT):
 def sendScriptFile(robot_url, script_path, port=PORT_PRIMARY_CLIENT):
     script = getScriptFromPath(script_path)
     sendScript(robot_url, script, port)
-
 
 
 if __name__ == "__main__":
