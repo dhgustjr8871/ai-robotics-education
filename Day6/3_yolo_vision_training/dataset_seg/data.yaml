@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 6
+names: ['circle', 'hexagon', 'oval', 'rectangle', 'ring', 'square']
+
+roboflow:
+  workspace: test-qw7gb
+  project: pick-and-place-ncybp
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/test-qw7gb/pick-and-place-ncybp/dataset/1

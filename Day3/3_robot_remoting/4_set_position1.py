@@ -45,7 +45,7 @@ async def handle_client(reader, writer):
                 print2(f"q_: {q_}", Color.GREEN)
             elif message == "req_data":
                 print("Received data request")
-                p_rel = [0.0, 0.0, 0.1, 0.0, 0.0, 0.0]
+                p_rel = [0.0, 0.1, 0.0, 0.0, 0.0, 0.0]
                 float_string = "({})\n".format(','.join(map(str, p_rel)))
                 writer.write(float_string.encode())
                 await writer.drain()
