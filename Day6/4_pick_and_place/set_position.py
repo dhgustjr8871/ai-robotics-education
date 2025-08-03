@@ -41,7 +41,7 @@ async def handle_client(reader, writer):
 
             if message == "req_data":
                 print("Received data request")
-                p_rel = [0.0, 0.0, -0.3, 0.0, 0.0, 0.0] # 상대 위치
+                p_rel = [0.1, 0.0, 0.0, 0.0, 0.0, 0.0] # 상대 위치
                 float_string = "({})\n".format(','.join(map(str, p_rel)))
                 writer.write(float_string.encode())
                 await writer.drain()

@@ -107,7 +107,7 @@ def sendScriptFile(robot_url, script_path, port=PORT_PRIMARY_CLIENT):
 
 
 # 사용할 객체 이름 목록
-objects = ['circle', 'ring', 'square', 'rect', 'hex', 'slt']
+objects = ['circle', 'ring', 'square', 'rectangle', 'hexagon', 'oval']
 
 def get_3d_position(x, y, depth_frame, intrinsics):
     depth = depth_frame.get_distance(x, y)
@@ -187,6 +187,8 @@ if __name__ == "__main__":
         else:
             print(f"{target_name} 중심의 3D 위치 (X, Y, Z): {np.round(pos_3d, 4)} [m]")
             pos_3d *= 1000
+
+
 
     finally:
         pipeline.stop()

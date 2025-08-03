@@ -3,25 +3,470 @@ def pickup():
     port = 12345
     socket_open(server_ip,port,"socket_0")
 
+    tcp_camera = p[-0.03, -0.06, 0.03, 0.0, 0.0, 0.0]
+    tcp_gripper = p[0.0, 0.0, 0.16, 0.0, 0.0, 0.0]
+    set_tcp(tcp_camera)
+    set_tcp(tcp_gripper)
+
+    #######################
+    # pose_add data 요청
+    #######################
     socket_send_line("req_data","socket_0")
     sleep(0.1)
     buf=socket_read_ascii_float(6,socket_name="socket_0", timeout=2)
-    p_rel = p[buf[1],buf[2],0.0,0.0,0.0,0.0]
-    p_rot = p[0.0,0.0,0.0,0.0,0.0,buf[6]]
-    p_down = p[0.0,0.0,buf[3]-0.2,0.0,0.0,0.0]
+    # p_rel = p[buf[1],buf[2],0.0,0.0,0.0,0.0]
+    # p_rot = p[0.0,0.0,0.0,0.0,0.0,buf[6]]
+    # p_down = p[0.0,0.0,buf[3],0.0,0.0,0.0]
+    p_tot = p[buf[1],buf[2],buf[3],0.0,0.0,buf[6]]
 
+    # p_=get_actual_tcp_pose()
+    # tool_pose = pose_trans(p_, p_rel)
+    # movej(tool_pose, a=1.2, v=0.3, t=0, r=0.0)
+
+    # p_=get_actual_tcp_pose()
+    # tool_pose = pose_trans(p_, p_rot)
+    # movej(tool_pose, a=1.2, v=0.3, t=0, r=0.0)
+    
+    # p_=get_actual_tcp_pose()
+    # tool_pose = pose_trans(p_, p_down)
+    # movel(tool_pose, a=1.2, v=0.3, t=0, r=0.0)
+
+    textmsg("tool flange: ", get_actual_tool_flange_pose())
+    set_tcp(tcp_camera)
+    p_ = get_actual_tcp_pose()
+    textmsg("p_: ", p_)
+    tool_pose = pose_trans(p_, p_tot)
+    textmsg("tool_pose: ", tool_pose)
+    set_tcp(tcp_gripper)
+    movel(tool_pose, a=1.2, v=0.2, t=0, r=0.0)
+
+    # p_=get_actual_tcp_pose()
+    # tool_pose = pose_trans(p_, p_tot)
+    # movel(tool_pose, a=1.2, v=0.2, t=0, r=0.0)
+
+    ###################
+    # grap
+    ###################
+    global _hidden_verificationVariable=0
+    step_count_0b292c5d_a40f_47e1_98d0_56e246af0f2a = 0.0
+    thread Step_Counter_Thread_b431ef9e_7259_4817_8d06_263f2c7e8e51():
+        while (True):
+        step_count_0b292c5d_a40f_47e1_98d0_56e246af0f2a = step_count_0b292c5d_a40f_47e1_98d0_56e246af0f2a + 1.0
+        sync()
+        end
+    end
+    run Step_Counter_Thread_b431ef9e_7259_4817_8d06_263f2c7e8e51()
+    set_gravity([0.0, 0.0, 9.82])
+    set_tcp(p[0.0,0.0,0.0,0.0,0.0,0.0])
+    set_tool_communication(True, 115200, 0, 1, 1.5, 3.5)
+    set_tool_output_mode(0)
+    set_tool_digital_output_mode(0, 1)
+    set_tool_digital_output_mode(1, 1)
+    set_tool_voltage(24)
+    set_safety_mode_transition_hardness(1)
+    set_target_payload(0.800000, [-0.001000, 0.030000, 0.047000], [0.001061, 0.001061, 0.001061, 0.000000, 0.000000, 0.000000])
+    set_standard_analog_input_domain(0, 1)
+    set_standard_analog_input_domain(1, 1)
+    set_tool_analog_input_domain(0, 1)
+    set_tool_analog_input_domain(1, 1)
+    set_analog_outputdomain(0, 0)
+    set_analog_outputdomain(1, 0)
+    set_input_actions_to_default()
+
+    # begin: URCap Installation Node
+    #   Source: Robotiq_Grippers, 3.15.0.97830, Robotiq Inc.
+    #   Type: Gripper
+    RQ_UNIT_PERCENT = 0
+    RQ_UNIT_MM = 1
+    RQ_UNIT_INCH = 2
+
+    global gripper_reconnecting = False
+    rq_current_limit_enabled = False
+    gripper_closed_norm = [100, 100, 100, 100]
+    gripper_open_norm = [0, 0, 0, 0]
+    gripper_closed_mm = [0, 0, 0, 0]
+    gripper_open_mm = [50, 50, 50, 50]
+
+    driver_gripper_client = rpc_factory("xmlrpc","http://localhost:63353")
+
+
+    def rq_set_force_norm(force_norm, gripper_socket="1"):
+        rq_wait_for_gripper_reconnection()
+        slave_id = gripper_socket_to_slave_id(gripper_socket)
+        rq_set_force_norm_multi_grippers(force_norm, [slave_id])
+    end
+
+    def rq_set_force_norm_multi_grippers(force_norm, slave_ids=[9]):
+        driver_gripper_client.setForce(slave_ids, force_norm)
+    end
+
+    def rq_set_speed_norm(speed_norm, gripper_socket="1"):
+        rq_wait_for_gripper_reconnection()
+        slave_id = gripper_socket_to_slave_id(gripper_socket)
+        rq_set_speed_norm_multi_grippers(speed_norm, [slave_id])
+    end
+
+    def rq_set_speed_norm_multi_grippers(speed_norm, slave_ids=[9]):
+        driver_gripper_client.setSpeed(slave_ids, speed_norm)
+    end
+
+    def rq_open_and_wait(gripper_socket="1"):
+        rq_wait_for_gripper_reconnection()
+        slave_id = gripper_socket_to_slave_id(gripper_socket)
+        driver_gripper_client.openGripper(slave_id)
+        rq_wait_for_motion_complete([slave_id])
+    end
+
+    def rq_close_and_wait(gripper_socket="1"):
+        rq_wait_for_gripper_reconnection()
+        slave_id = gripper_socket_to_slave_id(gripper_socket)
+        driver_gripper_client.closeGripper(slave_id)
+        rq_wait_for_motion_complete([slave_id])
+    end
+
+    def rq_move_norm_multi_grippers(position, slave_ids=[9]):
+        # rq_wait_for_gripper_reconnection fucntion is not called here because it is already done in the gripper contribution
+        # script and this function is not defined for public usage.
+        all_gripper_limits = get_all_gripper_limits(slave_ids)
+        driver_gripper_client.move(slave_ids, position, RQ_UNIT_PERCENT, all_gripper_limits)
+    end
+
+    def rq_move_and_wait_norm_multi_grippers(position, slave_ids=[9]):
+        all_gripper_limits = get_all_gripper_limits(slave_ids)
+        driver_gripper_client.move(slave_ids, position, RQ_UNIT_PERCENT, all_gripper_limits)
+        rq_wait_for_motion_complete(slave_ids)
+    end
+
+    def rq_move_and_wait(position, unit, gripper_socket="1"):
+        rq_wait_for_gripper_reconnection()
+        slave_id = gripper_socket_to_slave_id(to_str(gripper_socket))
+        all_gripper_limits = get_all_gripper_limits([slave_id])
+        driver_gripper_client.move([slave_id], position, unit, all_gripper_limits)
+        rq_wait_for_motion_complete([slave_id])
+    end
+
+    def rq_move_and_wait_norm(position, gripper_socket="1"):
+        rq_move_and_wait(position, RQ_UNIT_PERCENT, gripper_socket)
+    end
+
+    def rq_move_and_wait_mm(position, gripper_socket="1"):
+        rq_move_and_wait(position, RQ_UNIT_MM, gripper_socket)
+    end
+
+    def rq_move_and_wait_inches(position, gripper_socket="1"):
+        rq_move_and_wait(position, RQ_UNIT_INCH, gripper_socket)
+    end
+
+    def rq_is_object_detected(gripper_socket="1"):
+        slave_id = gripper_socket_to_slave_id(gripper_socket)
+        return driver_gripper_client.isObjectDetected(slave_id)
+    end
+
+    def rq_current_pos_norm(gripper_socket="1"):
+        slave_id = gripper_socket_to_slave_id(gripper_socket)
+        gripper_limits = get_gripper_limits(gripper_socket)
+        return driver_gripper_client.getCurrentPosition(slave_id,
+                                        RQ_UNIT_PERCENT,
+                                        gripper_limits[0],
+                                        gripper_limits[1],
+                                        gripper_limits[2],
+                                        gripper_limits[3])
+    end
+
+    def rq_current_pos_mm(gripper_socket=1):
+        slave_id = gripper_socket_to_slave_id(to_str(gripper_socket))
+        gripper_limits = get_gripper_limits(to_str(gripper_socket))
+        return driver_gripper_client.getCurrentPosition(slave_id,
+                                        RQ_UNIT_MM,
+                                        gripper_limits[0],
+                                        gripper_limits[1],
+                                        gripper_limits[2],
+                                        gripper_limits[3])
+    end
+
+    def rq_current_pos_inches(gripper_socket=1):
+        slave_id = gripper_socket_to_slave_id(to_str(gripper_socket))
+        gripper_limits = get_gripper_limits(to_str(gripper_socket))
+        return driver_gripper_client.getCurrentPosition(slave_id,
+                                        RQ_UNIT_INCH,
+                                        gripper_limits[0],
+                                        gripper_limits[1],
+                                        gripper_limits[2],
+                                        gripper_limits[3])
+    end
+
+    def rq_reset(gripper_socket="1"):
+        slave_id = gripper_socket_to_slave_id(gripper_socket)
+        driver_gripper_client.deactivate([slave_id])
+    end
+
+    def rq_set_gripper_max_cur(current_mA, gripper_socket="1"):
+        rq_wait_for_gripper_reconnection()
+        slave_id = gripper_socket_to_slave_id(gripper_socket)
+        driver_gripper_client.setMaximumCurrent(current_mA, slave_id)
+    end
+
+    def rq_get_gripper_max_cur(gripper_socket="1"):
+        slave_id = gripper_socket_to_slave_id(gripper_socket)
+        return driver_gripper_client.getMaximumCurrent(slave_id)
+    end
+
+    def rq_set_max_current_for_all_grippers():
+        rq_wait_for_gripper_reconnection()
+        driver_gripper_client.setMaximumCurrentOnAllGrippers(rq_current_limit_enabled)
+    end
+
+    def rq_is_gripper_activated(slave_id=9):
+        return driver_gripper_client.isGripperActivated(slave_id)
+    end
+
+    def rq_is_gripper_connected(slave_id=9):
+        return driver_gripper_client.isGripperConnected(slave_id)
+    end
+
+    def rq_get_fault(slave_id=9):
+        return driver_gripper_client.getFault(slave_id)
+    end
+
+    def rq_activate_and_wait(gripper_socket="1"):
+        slave_id = gripper_socket_to_slave_id(gripper_socket)
+        if (not rq_is_gripper_activated(slave_id)):
+            driver_gripper_client.activate([slave_id])
+        end
+    end
+
+    def rq_activate_all_grippers(reset=False):
+        empty_array_used_to_act_on_all_grippers = []
+        if (reset):
+            driver_gripper_client.deactivate(empty_array_used_to_act_on_all_grippers)
+            driver_gripper_client.activate(empty_array_used_to_act_on_all_grippers)
+        else:
+            driver_gripper_client.activateIfRequired(empty_array_used_to_act_on_all_grippers)
+        end
+    end
+
+    def get_closed_norm(gripper_socket):
+        return gripper_closed_norm[rq_gripper_socket_to_index(gripper_socket)]
+    end
+
+    def get_open_norm(gripper_socket):
+        return gripper_open_norm[rq_gripper_socket_to_index(gripper_socket)]
+    end
+
+    def get_open_mm(gripper_socket):
+        return gripper_open_mm[rq_gripper_socket_to_index(gripper_socket)]
+    end
+
+    def get_closed_mm(gripper_socket):
+        return gripper_closed_mm[rq_gripper_socket_to_index(gripper_socket)]
+    end
+
+    def set_closed_norm(closed_norm, gripper_socket):
+        gripper_closed_norm[rq_gripper_socket_to_index(gripper_socket)] = closed_norm
+    end
+
+    def set_open_norm(open_norm, gripper_socket):
+        gripper_open_norm[rq_gripper_socket_to_index(gripper_socket)] = open_norm
+    end
+
+    def set_closed_mm(closed_mm, gripper_socket):
+        gripper_closed_mm[rq_gripper_socket_to_index(gripper_socket)] = closed_mm
+    end
+
+    def set_open_mm(opened_mm, gripper_socket):
+        gripper_open_mm[rq_gripper_socket_to_index(gripper_socket)] = opened_mm
+    end
+
+    def slave_id_to_gripper_socket(slave_id):
+        if slave_id == 9:
+            return "1"
+        else:
+            return to_str(slave_id)
+        end
+    end
+
+    def gripper_socket_to_slave_id(gripper_socket):
+        if gripper_socket == "1":
+            return 9
+        else:
+            return to_num(gripper_socket)
+        end
+    end
+
+    def rq_slave_id_to_index(slave_id):
+        if slave_id == 9:
+            return 0
+        else:
+            return slave_id - 1
+        end
+    end
+
+    def rq_gripper_socket_to_index(gripper_socket):
+        return to_num(gripper_socket) - 1
+    end
+
+    def get_all_gripper_limits(slave_ids):
+        all_gripper_limits = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        nb_slave_ids = get_list_length(slave_ids)
+        slave_id_index = 0
+        index = 0
+        sub_index = 0
+        while (index < nb_slave_ids):
+            slave_id_index = 0
+            items_per_limit = 4
+            gripper_socket = slave_id_to_gripper_socket(slave_ids[index])
+            gripper_limits = get_gripper_limits(gripper_socket)
+            while (sub_index < items_per_limit):
+                all_gripper_limits[index] = gripper_limits[sub_index]
+                sub_index = sub_index + 1
+                index = index + 1
+            end
+            index = index + 1
+        end
+
+        return all_gripper_limits
+    end
+
+    def get_gripper_limits(gripper_socket):
+        return [get_closed_norm(gripper_socket),
+                get_open_norm(gripper_socket),
+                get_closed_mm(gripper_socket),
+                get_open_mm(gripper_socket)]
+    end
+
+    def rq_wait_for_motion_complete(slave_ids):
+        nb_slave_ids = get_list_length(slave_ids)
+        index = 0
+        while (index < nb_slave_ids):
+            rq_wait(slave_ids[index])
+            index = index + 1
+        end
+    end
+
+    def rq_stop(gripper_socket="1"):
+        slave_id = gripper_socket_to_slave_id(gripper_socket)
+        driver_gripper_client.goto(slave_id, 0)
+    end
+
+    def rq_wait(slave_id):
+        # Wait for the gripper motion to complete
+        while (not rq_is_motion_complete(slave_id)):
+            # The following patch is for Robotiq's Camera issue when communication is lost, but not the activation
+            # the communication driver reset the GTO bit
+            driver_gripper_client.goto(slave_id, 1)
+            sleep(0.1)
+        end
+    end
+
+    def rq_is_motion_complete(slave_id):
+        detection_flag = driver_gripper_client.getObjectDetectionFlag(slave_id)
+        return detection_flag > 0 and detection_flag < 4
+    end
+
+    def write_error_popup(index, message_part_1, message_part_2, title):
+        popup_message_part_1 = str_cat(message_part_1, index)
+        popup_message_part_2 = str_cat(popup_message_part_1, " ")
+        popup_message = str_cat(popup_message_part_2, message_part_2)
+        return popup(popup_message, title, False, True, True)
+    end
+
+    def rq_disconnect_grippers():
+        driver_gripper_client.pauseAndDisconnect()
+    end
+
+    def rq_reconnect_grippers(blocking=False, slave_ids=[]):
+        if blocking:
+            global gripper_reconnecting = True
+            driver_gripper_client.reconnectAndResume(slave_ids)
+            gripper_reconnecting = False
+        else:
+            thread recon_thread():
+                rq_reconnect_grippers(True)
+                return False
+            end
+            thrd = run recon_thread()
+        end
+    end
+
+    def rq_wait_for_gripper_reconnection(timeout_s = 30.0):
+        while (gripper_reconnecting == True):
+            if (timeout_s <= 0):
+                popup("Gripper has not reconnected before the expected time")
+                halt
+            else:
+                sync()
+                timeout_s = timeout_s - get_steptime()
+            end
+        end
+    end
+    set_closed_norm(100.0, "1")
+    set_open_norm(0.0, "1")
+    set_closed_mm(0.0, "1")
+    set_open_mm(50.0, "1")
+    set_closed_norm(100.0, "2")
+    set_open_norm(0.0, "2")
+    set_closed_mm(0.0, "2")
+    set_open_mm(50.0, "2")
+    set_closed_norm(100.0, "3")
+    set_open_norm(0.0, "3")
+    set_closed_mm(0.0, "3")
+    set_open_mm(50.0, "3")
+    set_closed_norm(100.0, "4")
+    set_open_norm(0.0, "4")
+    set_closed_mm(0.0, "4")
+    set_open_mm(50.0, "4")
+    rq_current_limit_enabled = False
+    # end: URCap Installation Node
+
+    gripper_slave_id = 9
+    popupErrorGripperWord = "Gripper"
+    popupErrorNoConnection1 = "must be connected to run this program."
+    popupErrorNoConnection2 = "No connection"
+    popupErrorNotActivated1 = "is not activated. Go to Installation tab > Gripper to activate it and run the program again."
+    popupErrorNotActivated2 = "Not activated"
+    rq_gripper_speed = 60.0
+    rq_gripper_force = 80.0
+
+    # closed: 0mm, opened: 50mm
+    rq_gripper_position_1 = 20.0
+    rq_gripper_position_2 = 50.0
+    # rq_is_robot_compliant = False
+    rq_wait_for_gripper_reconnection()
+
+    if (not driver_gripper_client.isGripperConnected(gripper_slave_id)):
+        write_error_popup(1, popupErrorGripperWord, popupErrorNoConnection1, popupErrorNoConnection2)
+    end
+
+    driver_gripper_client.setSpeed([gripper_slave_id], rq_gripper_speed)
+    driver_gripper_client.setForce([gripper_slave_id], rq_gripper_force)
+
+
+    # if rq_is_robot_compliant:
+    #     textmsg("Entering force mode")
+    #     zero_ftsensor()
+    #     sleep(0.02)
+    #     # Maximum allowed deviation values for non-compliant axes are default values generated by UR in a Force node
+    #     force_mode(tool_pose(), [1, 1, 0, 0, 0, 0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 2, [0.15, 0.15, 0.1, 0.3490658503988659, 0.3490658503988659, 0.3490658503988659])
+    # end
+
+    rq_move_and_wait(rq_gripper_position_1, RQ_UNIT_MM, gripper_slave_id)
+    textmsg("pos_1:", rq_gripper_position_1)
+
+    # rq_move_and_wait(rq_gripper_position_2, RQ_UNIT_MM, gripper_slave_id)
+    # textmsg("pos_2:", rq_gripper_position_2)
+
+    # if rq_is_robot_compliant:
+    #     end_force_mode()
+    #     textmsg("Exiting force mode")
+    # end
+
+    p_init_ = [1.57, -1.57, 1.57, -1.57, -1.57, 0.0]  # [rad]
+    movej(p_init_, a=1.2, v=0.3, t=0, r=0)
+
+    rq_move_and_wait(rq_gripper_position_2, RQ_UNIT_MM, gripper_slave_id)
+    textmsg("pos_1:", rq_gripper_position_2)
+
+    
     socket_close("socket_0")
     sleep(0.1)
-
-    p_=get_actual_tcp_pose()
-    tool_pose = pose_trans(p_, p_rel)
-    movej(tool_pose, a=1.2, v=0.3, t=0, r=0.0)
-
-    p_=get_actual_tcp_pose()
-    tool_pose = pose_trans(p_, p_rot)
-    movej(tool_pose, a=1.2, v=0.3, t=0, r=0.0)
-    
-    p_=get_actual_tcp_pose()
-    tool_pose = pose_trans(p_, p_down)
-    movel(tool_pose, a=1.2, v=0.3, t=0, r=0.0)
 end

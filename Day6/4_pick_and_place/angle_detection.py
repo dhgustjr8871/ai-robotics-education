@@ -14,11 +14,12 @@ def convertBack(x, y, w, h):
 
 def angle_detection(img, pt1, pt2):
     shape_image = np.zeros_like(img)
-    
-    y1 = max([pt1[0] - 25, 0])
-    y2 = min([pt2[0] + 25, 1280])
-    x1 = max([pt1[1] - 25, 0])
-    x2 = min([pt2[1] + 25, 728])
+
+    offset = 10    
+    y1 = max([pt1[0] - offset, 0])
+    y2 = min([pt2[0] + offset, 1280])
+    x1 = max([pt1[1] - offset, 0])
+    x2 = min([pt2[1] + offset, 728])
     
     shape_image[x1:x2, y1:y2] = img[x1:x2, y1:y2]
     cv2.imshow("Drawn Image", shape_image)

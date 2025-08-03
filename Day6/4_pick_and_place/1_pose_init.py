@@ -44,10 +44,10 @@ async def handle_client(reader, writer):
 
             if message == "initialize":
                 print("Received initialization request")
-                p_init = [90.000/180*pi, -90.000/180*pi, 90.000/180*pi, -90.000/180*pi, -90.000/180*pi, 0.000]
-                float_string = "({})\n".format(','.join(map(str, p_init)))
-                writer.write(float_string.encode())
-                await writer.drain()
+                # p_init = [90.000/180*pi, -90.000/180*pi, 90.000/180*pi, -90.000/180*pi, -90.000/180*pi, 0.000]
+                # float_string = "({})\n".format(','.join(map(str, p_init)))
+                # writer.write(float_string.encode())
+                # await writer.drain()
 
     except asyncio.CancelledError:
         pass
