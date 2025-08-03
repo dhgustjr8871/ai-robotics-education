@@ -15,7 +15,7 @@ def socket_init_pose():
     p_init = [buf[1],buf[2],buf[3],buf[4],buf[5],buf[6]]
 
     # movej에 절대 pose를 넣으면 알아서 inver kin 계산
-    movej(p_init, a=1.2, v=0.1, t=0, r=0)
+    movej(p_init, a=1.2, v=0.3, t=0, r=0)
     
     # 통신 종료
     socket_close("socket_0")

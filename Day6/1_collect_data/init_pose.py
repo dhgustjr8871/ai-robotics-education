@@ -29,7 +29,7 @@ PORT_SECONDARY_CLIENT = 30002
 
 server_ip = "192.168.1.5"
 robot_ip = "192.168.1.4"
-script_path = "scripts/init_pose.script"
+script_path = "scripts/socket_init_pose.script"
 
 async def handle_client(reader, writer):
     addr = writer.get_extra_info('peername')
