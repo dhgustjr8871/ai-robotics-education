@@ -1,3 +1,5 @@
+# 로봇을 촬영 원점으로 보내는 코드
+
 import asyncio
 import socket
 import struct
@@ -27,7 +29,7 @@ PORT_SECONDARY_CLIENT = 30002
 
 server_ip = "192.168.1.5"
 robot_ip = "192.168.1.4"
-script_path = "scripts/pose_init.script"
+script_path = "scripts/init_pose.script"
 
 async def handle_client(reader, writer):
     addr = writer.get_extra_info('peername')
@@ -44,7 +46,7 @@ async def handle_client(reader, writer):
 
             if message == "initialize":
                 print("Received initialization request")
-                p_init = [90.000/180*pi, -90.000/180*pi, 90.000/180*pi, -90.000/180*pi, -90.000/180*pi, 0.000]
+                p_init = [90.000/180*pi, -90.000/180*pi, 90.000/180*pi, -90.000/180*pi, -90.000/180*pi, 0.000] # 로봇의 초기 joint state
                 float_string = "({})\n".format(','.join(map(str, p_init)))
                 writer.write(float_string.encode())
                 await writer.drain()
@@ -68,11 +70,9 @@ async def main(host='0.0.0.0', port=12345):
 
     await asyncio.sleep(0.1)
     sendScriptFile(robot_ip, script_path, PORT_PRIMARY_CLIENT)
-    #camera_task = asyncio.create_task(update_camera())
 
     async with server:
         await server.serve_forever()
-        #await camera_task
 
 def getScriptFromPath(script_path):
     with open(script_path, 'r') as file:

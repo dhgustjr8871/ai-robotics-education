@@ -5,6 +5,7 @@ from math import cos, sin, pi
 import numpy as np
 import pyrealsense2 as rs
 import cv2
+import os
 
 
 class Color:
@@ -27,16 +28,24 @@ PORT_SECONDARY_CLIENT = 30002
 
 server_ip = "192.168.1.5"
 robot_ip = "192.168.1.4"
-script_path = "scripts/socket_hexa.script"
+script_path = "scripts/socket_collect_data.script"
 
-def get_hexagon_relative_pose(radius, index, num_points=6):
+pipeline = rs.pipeline()
+config = rs.config()
+config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
+pipeline.start(config)
+
+def get_relative_pose(radius, index, num_points=6):
     theta = 2 * pi * index / num_points
+    
+    # dx, dy, dz 계산 
     dx = radius * cos(theta)
     dy = radius * sin(theta)
     dz = 0.0
 
-    # 1. 벡터 정규화: [dx, dy, 1 - dz]
-    v = np.array([dx, dy, 0.5 - dz])
+    # rx, ry, rz 계산
+    # 1. 벡터 정규화
+    v = np.array([dx, dy, 0.5 - dz]) 
     norm = np.linalg.norm(v)
     vx, vy, vz = v / norm
 
@@ -58,26 +67,20 @@ def get_hexagon_relative_pose(radius, index, num_points=6):
         axis = axis / np.linalg.norm(axis)
         rx, ry, rz = - axis * angle
 
-    # rx, ry = 0.0, 0.0
-    # rz = 0.0
-
     return [dx, dy, dz, rx, ry, rz]
 
 def generate_circle_poses(radius, num_points=6):
     poses = []
-    # poses.append(get_hexagon_relative_pose(radius, 4, num_points))
     for i in range(num_points):
-        poses.append(get_hexagon_relative_pose(radius, i, num_points))
-    # poses.append(get_hexagon_relative_pose(radius, 1, num_points))
-    poses.append([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])  # Add a neutral pose at the end
+        poses.append(get_relative_pose(radius, i, num_points))
+    poses.append([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])  # 마지막에 원점으로 돌아오기
     return poses
 
-pipeline = rs.pipeline()
-config = rs.config()
-config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
-pipeline.start(config)
-
 def capture_image(pipeline, filename="output.jpg"):
+
+    save_dir = "img"
+    os.makedirs(save_dir, exist_ok=True)  # ./img 폴더가 없으면 생성
+
     # Flush old frames (RealSense가 최신 프레임을 제공하도록 몇 장 버림)
     for _ in range(5):
         pipeline.wait_for_frames()
@@ -94,7 +97,8 @@ def capture_image(pipeline, filename="output.jpg"):
     color_image = np.asanyarray(color_frame.get_data())
 
     # Save the image
-    cv2.imwrite(filename, color_image)
+    save_path = os.path.join(save_dir, filename)
+    cv2.imwrite(save_path, color_image)
     print(f"[INFO] Image saved to: {filename}")
     return True
 
@@ -114,19 +118,19 @@ async def handle_client(reader, writer):
             if message == "req_data":
                 print("Received data request")
 
-                poses = generate_circle_poses(0.15) 
+                poses = generate_circle_poses(0.15) # 0.15m radius
                 for pose in poses:
                     print2(f"Sending pose: {pose}", Color.GREEN)
                     float_string = "({})\n".format(','.join(map(str, pose)))
-                    # print(">>>", float_string.encode())
                     writer.write(float_string.encode())
                     await writer.drain()
                     await asyncio.sleep(0.1)  # 다음 포즈 보내기 전 대기
-
+                    
+                    # "reached"가 도착하면 이미지 캡쳐
                     data = await reader.read(1024)
                     message = data.decode('utf-8').rstrip()
                     if message == "reached":
-                        capture_image(pipeline, f"img_pose_{poses.index(pose)}.jpg")
+                        capture_image(pipeline, f"pose_{poses.index(pose)}.jpg")
                     
     except asyncio.CancelledError:
         pass
