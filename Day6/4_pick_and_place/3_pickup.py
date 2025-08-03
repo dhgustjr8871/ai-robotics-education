@@ -27,7 +27,7 @@ PORT_SECONDARY_CLIENT = 30002
 
 server_ip = "192.168.1.5"
 robot_ip = "192.168.1.4"
-script_path = "scripts/move_to_obj_center.script"
+script_path = "scripts/pickup.script"
 
 async def handle_client(reader, writer):
     global pos_3d
@@ -53,6 +53,7 @@ async def handle_client(reader, writer):
             elif message == "req_data":
                 print("Received data request")
                 p_rel = np.array([pos_3d[0], pos_3d[1], pos_3d[2], 0.0, 0.0, angle])
+                print("send", angle)
                 p_cam = ([-0.015, -0.06, 0.0, 0.0, 0.0, 0.0])
                 arr = p_rel+p_cam
                 print(arr)
