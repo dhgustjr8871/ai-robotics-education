@@ -8,7 +8,7 @@ def socket_collect_data():
 
     buf=socket_read_ascii_float(6,socket_name="socket_0", timeout=2)
     p_init = [buf[1],buf[2],buf[3],buf[4],buf[5],buf[6]]
-    movej(p_init, a=1.2, v=0.1, t=0, r=0)
+    movej(p_init, a=1.2, v=0.5, t=0, r=0)
     
     socket_close("socket_0")
     sleep(0.1)

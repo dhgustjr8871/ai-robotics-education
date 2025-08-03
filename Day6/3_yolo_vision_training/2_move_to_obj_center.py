@@ -50,9 +50,9 @@ async def handle_client(reader, writer):
                 print2(f"q_: {q_}", Color.GREEN)
             elif message == "req_data":
                 print("Received data request")
-                p_rel = np.array([-pos_3d[0], -pos_3d[1], 0.0, 0.0, 0.0, 0.0])
+                p_rel = np.array([pos_3d[0], pos_3d[1], 0.0, 0.0, 0.0, 0.0])
                 p_cam = ([-0.015, -0.06, 0.0, 0.0, 0.0, 0.0])
-                arr = p_rel#+p_cam
+                arr = p_rel+p_cam
                 print(arr)
                 float_string = "({})\n".format(','.join(map(str, arr)))
                 writer.write(float_string.encode())
@@ -155,30 +155,35 @@ if __name__ == "__main__":
                     box_dict[cls_id] = box
             else:
                 box_dict[cls_id] = box
-
+        print(box_dict)
         # 사용자 입력
         print("감지된 클래스 목록:")
         for i in box_dict:
             print(f"- {objects[i]}")
-        while(True):
-            target_name = input("찾고자 하는 객체 이름을 입력하세요: ").strip().lower()
+            print(i)
+            x1, y1, x2, y2 = map(int, box_dict[i].xyxy[0])
+            cx = (x1 + x2) // 2
+            cy = (y1 + y2) // 2
+            print(cx, cy)
+            intrinsics = depth_frame.profile.as_video_stream_profile().intrinsics
+            pos_3d = get_3d_position(cx, cy, depth_frame, intrinsics)
+            print(pos_3d)
+        target_name = input("찾고자 하는 객체 이름을 입력하세요: ").strip().lower()
 
-            if target_name not in objects:
-               print("지원되지 않는 객체입니다.")
-            else:
-                break
+        if target_name not in objects:
+            print("지원되지 않는 객체입니다.")
+            
+        cls_id = objects.index(target_name)
 
-            cls_id = objects.index(target_name)
-            if cls_id not in box_dict:
-                print(f"{target_name} 감지되지 않음.")
-            else:
-                break
+        if cls_id not in box_dict:
+            print(f"{target_name} 감지되지 않음.")
 
         box = box_dict[cls_id]
         x1, y1, x2, y2 = map(int, box.xyxy[0])
         cx = (x1 + x2) // 2
         cy = (y1 + y2) // 2
 
+        print(cx, cy)
         # 3D 위치 계산
         intrinsics = depth_frame.profile.as_video_stream_profile().intrinsics
         pos_3d = get_3d_position(cx, cy, depth_frame, intrinsics)

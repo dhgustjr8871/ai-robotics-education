@@ -14,11 +14,8 @@ def socket_set_position():
     q_=get_actual_joint_positions()
     p_=get_actual_tcp_pose()
 
-    tool_pose = get_forward_kin()
+    tool_pose = pose_trans(p_, p_rel)
     textmsg(tool_pose)
-    tool_pose = pose_trans(tool_pose, p_rel)
-    textmsg(tool_pose)
-    #p_ready = get_inverse_kin(p_rel)
     
 
     #textmsg(p_ready)
