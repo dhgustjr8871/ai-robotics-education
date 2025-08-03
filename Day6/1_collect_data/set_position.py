@@ -1,3 +1,5 @@
+# 로봇이 현재 pose에서 상대적으로 얼마나 더 이동할지를 명령하는 코드
+
 import asyncio
 import socket
 import struct
@@ -37,13 +39,7 @@ async def handle_client(reader, writer):
 
             print(f"Received from {addr}: {message}")
 
-            if message == "current_pos":
-                print("Received position data request")
-                p_ = await handle_pos_data(reader)
-                print2(f"p_: {p_}", Color.GREEN)
-                q_ = await handle_pos_data(reader)
-                print2(f"q_: {q_}", Color.GREEN)
-            elif message == "req_data":
+            if message == "req_data":
                 print("Received data request")
                 p_rel = [0.0, 0.0, 0.0, -1.0, 0.0, 0.0]
                 float_string = "({})\n".format(','.join(map(str, p_rel)))
