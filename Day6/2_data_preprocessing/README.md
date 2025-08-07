@@ -53,8 +53,46 @@ Continue를 누르고, Create Dataset을 클릭하면, 데이터셋이 생성됩
 
 <img src="image/export3.png" alt="Roboflow 웹사이트">
 
+#### 데이터셋 파일의 구조
+
+데이터셋을 다운로드하면, 다음과 같은 구조로 데이터셋이 생성됩니다.
+
+```
+datasets/
+└── detection
+	├── guide_objects.yaml
+	├── train
+	│   ├── images
+	│   ├── labels
+	└── valid
+		├── images
+		├── labels
+```
+
+이때, `guide_objects.yaml` 파일은 데이터셋에 포함된 객체들의 클래스 정보 및 train셋과 validation셋의 경로를 담고 있습니다. 이 파일을 YOLO 모델 학습시 데이터셋 경로로 지정해 주면 됩니다.
+
+```
+train: ../train/images
+val: ../valid/images
+
+nc: 6
+names: ['circle', 'ring', 'square', 'rectangle', 'hexagon', 'oval']
+```
+
 ## 3. OBB를 위한 데이터셋 생성
 
-## 유의점
+픽앤플레이스를 수행하기 위해 그리퍼를 물체가 기울어진 각도와 동일하게 맞춰야 합니다. 그러나 현재 Detection 모델은 물체의 기울어진 정도를 예측하지 않습니다. 따라서 YOLO OBB 모델을 이용하여 물체의 기울어진 각도 또한 예측해보고자 합니다.
 
-성공적인 학습을 위해서는 최소한 100장 이상의 데이터가 필요합니다. 또한, 이미지 데이터는 다양한 상황에 대해서 주어질 수록 
+YOLO OBB 학습을 위한 데이터셋을 생성하는 과정은 Detection과 거의 동일합니다. 다만, 데이터 라벨링시 Bounding Box Tool 대신 Polygon Tool을 이용해야 하며, 직사각형에 최대한 가깝게 물체를 둘러싸서 라벨링을 진행해야 합니다.
+
+<img src="image/obb1.png" alt="Roboflow 웹사이트">
+
+또한, 최종적인 데이터셋 다운로드시 **YOLOv8 Oriented Bounding Box** 포맷을 선택해야 합니다.
+
+<img src="image/obb2.png" alt="Roboflow 웹사이트">
+
+## 마무리
+
+이렇게 Roboflow를 이용하여 데이터셋을 라벨링하고, YOLOv11과 YOLO OBB 모델 학습에 사용할 수 있는 데이터셋을 생성하는 방법을 알아보았습니다. Roboflow는 데이터 전처리와 라벨링을 간편하게 할 수 있는 도구로, 다양한 기능을 제공하므로 활용해 보시기 바랍니다.
+
+다음 실습에서는 Roboflow로 생성한 데이터셋을 이용하여, 픽앤플레이스를 위한 YOLO 모델을 학습시켜 보겠습니다.
