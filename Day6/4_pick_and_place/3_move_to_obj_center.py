@@ -27,6 +27,7 @@ PORT_SECONDARY_CLIENT = 30002
 server_ip = "192.168.1.4"
 robot_ip = "192.168.1.2"
 script_path = "scripts/move_to_obj_center.script"
+weight_path = "weights/detection/best.pt"
 
 async def handle_client(reader, writer):
     global pos_3d
@@ -119,7 +120,7 @@ def get_3d_position(x, y, depth_frame, intrinsics):
 if __name__ == "__main__":
     global pos_3d
     # YOLO 모델 로딩
-    model = YOLO("weights/detection/best.pt")
+    model = YOLO(weight_path)
 
     # RealSense 파이프라인 설정
     pipeline = rs.pipeline()
@@ -148,7 +149,6 @@ if __name__ == "__main__":
         results[0].show()
         boxes = results[0].boxes
         box_dict = {}
-
         for box in boxes:
             cls_id = int(box.cls[0])
             print(box)

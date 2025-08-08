@@ -5,29 +5,15 @@ from ultralytics import YOLO
 import asyncio
 import socket
 import struct
-from angle_detection import angle_detection
 
-class Color:
-    PURPLE = '\033[95m'
-    CYAN = '\033[96m'
-    DARKCYAN = '\033[36m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    END = '\033[0m'
-
-def print2(str, color=Color.YELLOW):
-    print(color, str, Color.END)
 
 PORT_PRIMARY_CLIENT = 30001
 PORT_SECONDARY_CLIENT = 30002
 
 server_ip = "192.168.1.4"
 robot_ip = "192.168.1.2"
-script_path = "scripts/pickup_clean.script"
+script_path = "scripts/pickup.script"
+weight_path = "weights/obb/best.pt"
 
 async def handle_client(reader, writer):
     global pos_3d
@@ -105,7 +91,7 @@ def get_3d_position(x, y, depth_frame, intrinsics):
 if __name__ == "__main__":
     global pos_3d
     # YOLO 모델 로딩
-    model = YOLO("weights/obb/best.pt")
+    model = YOLO(weight_path)
 
     # RealSense 파이프라인 설정
     pipeline = rs.pipeline()

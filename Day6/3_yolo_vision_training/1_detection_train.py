@@ -4,7 +4,7 @@ if __name__ == "__main__":
 	# Load a pretrained YOLO11n model
 	model = YOLO("yolo11n.yaml").load("yolo11n.pt")
 
-	results = model.train(data=r"datasets\detection\data.yaml", epochs=250, imgsz=640, device=0)
+	results = model.train(data="datasets/detection/data.yaml", epochs=250, imgsz=640, device=0)
 	metrics = model.val()
 
 	results=model(source="eval_image.png",save=True)
