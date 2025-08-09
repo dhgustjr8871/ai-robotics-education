@@ -1,0 +1,27 @@
+filename,pred_class,confidence,dest_path
+classify\Screen Shot 2018-06-07 at 2.15.34 PM.png,rottenapples,1.0000,classify_result\rottenapples\Screen Shot 2018-06-07 at 2.15.34 PM_1.png
+classify\Screen Shot 2018-06-07 at 2.16.54 PM.png,rottenapples,1.0000,classify_result\rottenapples\Screen Shot 2018-06-07 at 2.16.54 PM_1.png
+classify\Screen Shot 2018-06-07 at 2.18.25 PM.png,rottenapples,1.0000,classify_result\rottenapples\Screen Shot 2018-06-07 at 2.18.25 PM_1.png
+classify\Screen Shot 2018-06-07 at 2.20.04 PM.png,rottenapples,1.0000,classify_result\rottenapples\Screen Shot 2018-06-07 at 2.20.04 PM_1.png
+classify\Screen Shot 2018-06-07 at 2.20.34 PM.png,rottenapples,0.9999,classify_result\rottenapples\Screen Shot 2018-06-07 at 2.20.34 PM_1.png
+classify\Screen Shot 2018-06-07 at 2.21.09 PM.png,rottenapples,1.0000,classify_result\rottenapples\Screen Shot 2018-06-07 at 2.21.09 PM_1.png
+classify\Screen Shot 2018-06-08 at 4.59.44 PM.png,freshapples,1.0000,classify_result\freshapples\Screen Shot 2018-06-08 at 4.59.44 PM_1.png
+classify\Screen Shot 2018-06-08 at 5.01.15 PM.png,freshapples,1.0000,classify_result\freshapples\Screen Shot 2018-06-08 at 5.01.15 PM_1.png
+classify\Screen Shot 2018-06-08 at 5.01.22 PM.png,freshapples,0.9991,classify_result\freshapples\Screen Shot 2018-06-08 at 5.01.22 PM_1.png
+classify\Screen Shot 2018-06-08 at 5.01.41 PM.png,freshapples,1.0000,classify_result\freshapples\Screen Shot 2018-06-08 at 5.01.41 PM_1.png
+classify\Screen Shot 2018-06-08 at 5.02.43 PM.png,freshapples,1.0000,classify_result\freshapples\Screen Shot 2018-06-08 at 5.02.43 PM_1.png
+classify\Screen Shot 2018-06-08 at 5.03.40 PM.png,freshapples,1.0000,classify_result\freshapples\Screen Shot 2018-06-08 at 5.03.40 PM_1.png
+classify\Screen Shot 2018-06-08 at 5.04.16 PM.png,freshapples,1.0000,classify_result\freshapples\Screen Shot 2018-06-08 at 5.04.16 PM_1.png
+classify\Screen Shot 2018-06-08 at 5.04.24 PM.png,freshapples,1.0000,classify_result\freshapples\Screen Shot 2018-06-08 at 5.04.24 PM_1.png
+classify\Screen Shot 2018-06-08 at 5.05.34 PM.png,freshapples,1.0000,classify_result\freshapples\Screen Shot 2018-06-08 at 5.05.34 PM_1.png
+classify\Screen Shot 2018-06-08 at 5.05.41 PM.png,freshapples,0.9999,classify_result\freshapples\Screen Shot 2018-06-08 at 5.05.41 PM_1.png
+classify\Screen Shot 2018-06-12 at 8.51.00 PM.png,rottenbanana,1.0000,classify_result\rottenbanana\Screen Shot 2018-06-12 at 8.51.00 PM_1.png
+classify\Screen Shot 2018-06-12 at 8.51.46 PM.png,rottenbanana,1.0000,classify_result\rottenbanana\Screen Shot 2018-06-12 at 8.51.46 PM_1.png
+classify\Screen Shot 2018-06-12 at 8.52.16 PM.png,rottenbanana,1.0000,classify_result\rottenbanana\Screen Shot 2018-06-12 at 8.52.16 PM_1.png
+classify\Screen Shot 2018-06-12 at 8.52.21 PM.png,rottenbanana,1.0000,classify_result\rottenbanana\Screen Shot 2018-06-12 at 8.52.21 PM_1.png
+classify\Screen Shot 2018-06-12 at 8.53.09 PM.png,rottenbanana,1.0000,classify_result\rottenbanana\Screen Shot 2018-06-12 at 8.53.09 PM_1.png
+classify\Screen Shot 2018-06-12 at 9.45.15 PM.png,freshbanana,1.0000,classify_result\freshbanana\Screen Shot 2018-06-12 at 9.45.15 PM_1.png
+classify\Screen Shot 2018-06-12 at 9.45.22 PM.png,freshbanana,1.0000,classify_result\freshbanana\Screen Shot 2018-06-12 at 9.45.22 PM_1.png
+classify\Screen Shot 2018-06-12 at 9.45.34 PM.png,freshbanana,1.0000,classify_result\freshbanana\Screen Shot 2018-06-12 at 9.45.34 PM_1.png
+classify\Screen Shot 2018-06-12 at 9.47.22 PM.png,freshbanana,1.0000,classify_result\freshbanana\Screen Shot 2018-06-12 at 9.47.22 PM_1.png
+classify\Screen Shot 2018-06-12 at 9.47.39 PM.png,freshbanana,1.0000,classify_result\freshbanana\Screen Shot 2018-06-12 at 9.47.39 PM_1.png
