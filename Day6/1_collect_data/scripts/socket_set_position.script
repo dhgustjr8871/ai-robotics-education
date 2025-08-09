@@ -1,30 +1,23 @@
 def socket_set_position1():
-    server_ip = "192.168.1.5"
+    server_ip = "192.168.1.7"
     port = 12345
 
-    # 통신 시작
     socket_open(server_ip,port,"socket_0")
 
-    # pose data 요청
     socket_send_line("req_data","socket_0")
     sleep(0.1)
 
-    # 6개 읽어오기
     buf=socket_read_ascii_float(6,socket_name="socket_0", timeout=2)
 
-    # 가장 앞 데이터 크기(지금은 6) 제외하고 상대 pose로 지정
     p_rel = p[buf[1],buf[2],buf[3],buf[4],buf[5],buf[6]]
     
-    # 현재 절대 pose 받아오기
+    set_tcp(p[0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
     p_current = get_actual_tcp_pose()
 
-    # target pose 계산(p_current를 기준으로 한 p_rel의 절대 pose)
     p_target = pose_trans(p_current, p_rel)
 
-    # movej에 절대 pose 넣으면 자동으로 inverse kin 계산
     movej(p_target, a=1.2, v=0.1, t=0, r=0.0)
 
-    # 통신 종료
     socket_close("socket_0")
     sleep(0.1)
 end

@@ -10,9 +10,9 @@ import struct
 PORT_PRIMARY_CLIENT = 30001
 PORT_SECONDARY_CLIENT = 30002
 
-server_ip = "192.168.1.7"
-robot_ip = "192.168.1.6"
-script_path = "scripts/pickup_demo.script"
+server_ip = "192.168.1.4"
+robot_ip = "192.168.1.2"
+script_path = "scripts/pickup.script"
 weight_path = "weights/obb/best.pt"
 
 async def handle_client(reader, writer):
@@ -34,8 +34,7 @@ async def handle_client(reader, writer):
                 print("Received data request")
                 p_rel = np.array([pos_3d[0], pos_3d[1], pos_3d[2], 0.0, 0.0, angle])
                 print("send", angle)
-                p_cam = ([-0.015, -0.06, 0.0, 0.0, 0.0, 0.0])
-                arr = p_rel#+p_cam
+                arr = p_rel
                 print(arr)
                 float_string = "({})\n".format(','.join(map(str, arr)))
                 writer.write(float_string.encode())

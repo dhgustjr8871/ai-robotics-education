@@ -9,8 +9,8 @@ import cv2
 PORT_PRIMARY_CLIENT = 30001
 PORT_SECONDARY_CLIENT = 30002
 
-server_ip = "192.168.1.4"
-robot_ip = "192.168.1.2"
+server_ip = "192.168.1.7"
+robot_ip = "192.168.1.6"
 script_path = "scripts/pose_init.script"
 
 async def handle_client(reader, writer):
