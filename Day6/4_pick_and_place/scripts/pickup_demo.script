@@ -1996,19 +1996,11 @@ def pickup():
     #======    End of OnRobot twofg Run    ======#
     # end: URCap Installation Node
 
-
-    on_return = twofg_grip(width = 33.0, force = 50, speed = 100, external_grip = True, tool_index = 0)
-    twofg_payload_set(mass = 0.0, tool_index = 0, use_guard = True)
-
-    on_return = twofg_release(width = 70.0, speed = 100, external_release = True, tool_index = 0)
-    twofg_payload_set(mass = 0.0, tool_index = 0, use_guard = False)
-
-
-
+    
     ###################
     # pick and place
     ###################
-    
+
     # move to object
     set_tcp(tcp_gripper)
     movel(tool_pose, a = 1.2, v = 0.05, t = 0, r = 0.0)
