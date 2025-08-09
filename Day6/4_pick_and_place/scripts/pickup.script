@@ -4,7 +4,7 @@ def pickup():
     socket_open(server_ip,port,"socket_0")
 
     tcp_camera = p[-0.03, -0.06, 0.03, 0.0, 0.0, 0.0]
-    tcp_gripper = p[0.0, 0.0, 0.16, 0.0, 0.0, 0.0]
+    tcp_gripper = p[0.0, 0.0, 0.1456, 0.0, 0.0, 0.0]
     set_tcp(tcp_camera)
     set_tcp(tcp_gripper)
 
