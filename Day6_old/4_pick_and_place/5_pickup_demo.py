@@ -10,9 +10,9 @@ import struct
 PORT_PRIMARY_CLIENT = 30001
 PORT_SECONDARY_CLIENT = 30002
 
-server_ip = "192.168.1.4"
-robot_ip = "192.168.1.2"
-script_path = "scripts/pickup.script"
+server_ip = "192.168.1.7"
+robot_ip = "192.168.1.6"
+twofg_script_path = "scripts/pickup_demo.script"
 weight_path = "weights/obb/best.pt"
 
 async def handle_client(reader, writer):
@@ -22,22 +22,28 @@ async def handle_client(reader, writer):
     print(f"Connected by {addr}")
     
     try:
-        while True:
-            data = await reader.read(1024)
-            if not data:
-                break
-            message = data.decode('utf-8').rstrip()  # Remove trailing newline
 
-            print(f"Received from {addr}: {message}")
 
-            if message == "req_data":
-                print("Received data request")
-                p_rel = np.array([pos_3d[0], pos_3d[1], pos_3d[2], 0.0, 0.0, angle])
-                print("send", angle)
-                arr = p_rel
-                print(arr)
-                float_string = "({})\n".format(','.join(map(str, arr)))
-                writer.write(float_string.encode())
+        # print(f"Received from {addr}: {message}")
+        
+        await asyncio.sleep(0.1)
+        sendScriptFile(robot_ip, twofg_script_path, PORT_PRIMARY_CLIENT)
+
+        data = await reader.read(1024)
+        message = data.decode('utf-8').rstrip()  # Remove trailing newline
+        if message == "req_width":
+            gripper_width = 35.0
+            float_string = "({})\n".format(gripper_width)
+            writer.write(float_string.encode())
+
+        # if message == "req_data":
+        #     print("Received data request")
+        #     p_rel = np.array([pos_3d[0], pos_3d[1], pos_3d[2], 0.0, 0.0, angle])
+        #     print("send", angle)
+        #     arr = p_rel
+        #     print(arr)
+        #     float_string = "({})\n".format(','.join(map(str, arr)))
+        #     writer.write(float_string.encode())
             
     except asyncio.CancelledError:
         pass
@@ -55,8 +61,8 @@ async def main(host='0.0.0.0', port=12345):
     print(f"Server listening on {addr}")
     print("Sending script to the robot...")
 
-    await asyncio.sleep(0.1)
-    sendScriptFile(robot_ip, script_path, PORT_PRIMARY_CLIENT)
+    # await asyncio.sleep(0.1)
+    # sendScriptFile(robot_ip, script_path, PORT_PRIMARY_CLIENT)
 
     async with server:
         await server.serve_forever()

@@ -1,4 +1,4 @@
-def unnamed():
+def twofg():
   global _hidden_verificationVariable = 0
   set_target_payload(0.480000, [-0.010000, 0.010000, 0.021000], [0.000453, 0.000453, 0.000453, 0.000000, 0.000000, 0.000000])
   set_safety_mode_transition_hardness(1)
@@ -1969,15 +1969,17 @@ def unnamed():
   # end: URCap Installation Node
 
 
-  cnt = 0
-  while (cnt < 2):
-    on_return = twofg_grip(width = 33.0, force = 50, speed = 100, external_grip = True, tool_index = 0)
-    twofg_payload_set(mass = 0.0, tool_index = 0, use_guard = True)
+  server_ip = "192.168.1.7"
+  port = 12345
+  socket_open(server_ip,port,"socket_0")
 
-    on_return = twofg_release(width = 70.0, speed = 100, external_release = True, tool_index = 0)
-    twofg_payload_set(mass = 0.0, tool_index = 0, use_guard = False)
+  socket_send_line("req_width","socket_0")
+  sleep(0.1)
+  
+  buf=socket_read_ascii_float(1,socket_name="socket_0", timeout=2)
+  on_return = twofg_grip(width = buf[1], force = 50, speed = 100, external_grip = True, tool_index = 0)
+  twofg_payload_set(mass = 0.0, tool_index = 0, use_guard = False)
 
-    cnt = cnt + 1
-  end
-
+  socket_close("socket_0")
+  sleep(0.1)
 end

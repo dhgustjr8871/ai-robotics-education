@@ -1971,8 +1971,8 @@ def unnamed():
 
   cnt = 0
   while (cnt < 2):
-    # on_return = twofg_grip(width = 33.0, force = 50, speed = 100, external_grip = True, tool_index = 0)
-    # twofg_payload_set(mass = 0.0, tool_index = 0, use_guard = True)
+    on_return = twofg_grip(width = 33.0, force = 50, speed = 100, external_grip = True, tool_index = 0)
+    twofg_payload_set(mass = 0.0, tool_index = 0, use_guard = True)
 
     on_return = twofg_release(width = 70.0, speed = 100, external_release = True, tool_index = 0)
     twofg_payload_set(mass = 0.0, tool_index = 0, use_guard = False)
