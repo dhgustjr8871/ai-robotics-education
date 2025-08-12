@@ -7,4 +7,4 @@ class Robot:
         print(f"Hello, I am robot {self.name}.")
 
 r = Robot("Moby")
-r.greet()
+r.greet()  # Hello, I am robot Moby.
