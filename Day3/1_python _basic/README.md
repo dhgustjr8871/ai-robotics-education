@@ -113,7 +113,7 @@ print(len(person))
 - Python은 들여쓰기로 코드 블록을 구분하므로, 조건문 안의 실행 코드는 같은 들여쓰기 간격을 맞춰야 합니다.
 
 
-#### 예시(3_if_example.py):
+#### 예제코드(3_if_example.py):
 ```python
 x = 10
 y = 20
