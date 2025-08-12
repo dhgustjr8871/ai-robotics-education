@@ -247,7 +247,7 @@ result = multiply(4, 5)  # result에는 20이 저장됨
 ### 2.1 클래스 정의와 생성자 (`__init__`)
 클래스를 정의할 때는 `class` 키워드를 사용하고, 생성자 메서드인 `__init__`를 통해 객체가 생성될 때 필요한 속성들을 초기화할 수 있습니다.
 
-#### 예제코드(7_class_robot_basic.py)
+#### 예제코드(7_class_robot_basic.py):
 ```python
 class Robot:
     def __init__(self, name, model):
@@ -258,7 +258,7 @@ class Robot:
 ### 2.2 인스턴스 생성과 속성 접근
 클래스 정의 후, 해당 클래스를 기반으로 실제 객체(인스턴스)를 생성할 수 있습니다.
 
-#### 예제코드(7_class_robot_basic.py)
+#### 예제코드(7_class_robot_basic.py):
 ```python
 my_robot = Robot("Indy", "MK-7")
 print(my_robot.name)   # Indy
@@ -268,7 +268,7 @@ print(my_robot.model)  # MK-7
 ### 2.3 메서드 정의
 클래스 안에 정의된 함수는 '메서드'라고 부르며, `self`를 첫 번째 인자로 받아 해당 인스턴스에 접근할 수 있습니다.
 
-#### 예제코드(8_class_robot_method.py)
+#### 예제코드(8_class_robot_method.py):
 ```python
 class Robot:
     def __init__(self, name):
@@ -284,7 +284,7 @@ r.greet()  # Hello, I am robot Moby.
 ### 2.4 클래스 예제: Person
 아래는 앞서 배운 개념을 모두 활용한 `Person` 클래스의 예시입니다.
 
-#### 예제코드(9_class_person.py)
+#### 예제코드(9_class_person.py):
 ```python
 class Person:
     def __init__(self, name, age):
