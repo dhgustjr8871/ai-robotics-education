@@ -12,8 +12,9 @@ PORT_SECONDARY_CLIENT = 30002
 
 server_ip = "192.168.1.7"
 robot_ip = "192.168.1.6"
-script_path = "scripts/pickup_demo.script"
+script_path = "scripts/pickup.script"
 weight_path = "weights/obb/best.pt"
+obj_height = 0.045 # height offset for ring
 
 async def handle_client(reader, writer):
     global pos_3d
@@ -79,7 +80,7 @@ def sendScriptFile(robot_url, script_path, port=PORT_PRIMARY_CLIENT):
 
 
 # 사용할 객체 이름 목록
-objects = ['circle', 'hexagon', 'oval', 'rectangle', 'ring', 'suqare']
+objects = ['circle', 'hexagon', 'oval', 'rectangle', 'ring', 'square']
 
 def get_3d_position(x, y, depth_frame, intrinsics):
     depth = depth_frame.get_distance(x, y)
@@ -135,8 +136,9 @@ if __name__ == "__main__":
             print(f"- {objects[i]}")
         target_name = input("찾고자 하는 객체 이름을 입력하세요: ").strip().lower()
 
-        if target_name not in objects:
+        while target_name not in objects:
             print("지원되지 않는 객체입니다.")
+            target_name = input("찾고자 하는 객체 이름을 입력하세요: ").strip().lower()
 
         cls_id = objects.index(target_name)
         if cls_id not in box_dict:
@@ -157,6 +159,9 @@ if __name__ == "__main__":
         # 3D 위치 계산
         intrinsics = depth_frame.profile.as_video_stream_profile().intrinsics
         pos_3d = get_3d_position(cx, cy, depth_frame, intrinsics)
+
+        if target_name == "ring":
+            pos_3d[2] -= obj_height
 
         if pos_3d is None:
             print("해당 위치의 Depth 정보 없음.")

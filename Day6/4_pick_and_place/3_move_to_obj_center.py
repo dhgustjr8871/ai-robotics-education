@@ -164,8 +164,9 @@ if __name__ == "__main__":
             print(f"- {objects[i]}")
         target_name = input("찾고자 하는 객체 이름을 입력하세요: ").strip().lower()
 
-        if target_name not in objects:
+        while target_name not in objects:
             print("지원되지 않는 객체입니다.")
+            target_name = input("찾고자 하는 객체 이름을 입력하세요: ").strip().lower()
             
         cls_id = objects.index(target_name)
 
