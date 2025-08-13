@@ -34,6 +34,7 @@
 | **추적(Tracking)**           | 특정 객체를 시간적으로 추적                   |
 | **자세 추정(Pose Estimation)** | 물체 또는 사람의 관절/위치 추정                |
 
+**Detection 모델 예시**
 <p align="center">
   <a href="https://youtu.be/Avpce9ouYJQ">
     <img src="https://img.youtube.com/vi/Avpce9ouYJQ/maxresdefault.jpg" alt="시연 영상" width="80%">
@@ -42,8 +43,7 @@
   ▲ 이미지를 클릭하면 YouTube에서 영상을 볼 수 있습니다.
 </p>
 
-**Detection 모델 예시**
-
+**Pose Estimation 모델 예시**
 <p align="center">
   <a href="https://youtu.be/D1LQPbYCc4o">
     <img src="https://img.youtube.com/vi/D1LQPbYCc4o/maxresdefault.jpg" alt="시연 영상" width="80%">
@@ -52,7 +52,6 @@
   ▲ 이미지를 클릭하면 YouTube에서 영상을 볼 수 있습니다.
 </p>
 
-**Pose Estimation 모델 예시**
 
 
 ## 3. 비전 AI의 기본 구조
