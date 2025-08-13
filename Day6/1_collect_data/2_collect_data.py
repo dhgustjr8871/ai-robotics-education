@@ -28,7 +28,7 @@ PORT_SECONDARY_CLIENT = 30002
 
 server_ip = "192.168.1.5"
 robot_ip = "192.168.1.4"
-script_path = "scripts/socket_collect_data.script"
+script_path = "scripts/collect_data.script"
 
 pipeline = rs.pipeline()
 config = rs.config()
@@ -136,12 +136,9 @@ async def handle_client(reader, writer):
         pass
     except ConnectionResetError:
         print(f"Connection with {addr} reset")
-    # except Exception as e:
-    #     print("Error:", e)
     finally:
         print(f"Connection with {addr} closed")
         writer.close()
-        # await writer.wait_closed()
 
 
 async def handle_pos_data(reader):

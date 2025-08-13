@@ -1,4 +1,4 @@
-def socket_collect_data():
+def collect_data():
     server_ip = "192.168.1.5"
     port = 12345
     socket_open(server_ip, port, "socket_0")
