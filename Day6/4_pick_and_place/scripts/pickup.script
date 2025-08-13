@@ -1,29 +1,4 @@
 def pickup():
-    server_ip = "192.168.1.7"
-    port = 12345
-    socket_open(server_ip, port, "socket_0")
-
-    tcp_camera = p[-0.03, -0.06, 0.03, 0.0, 0.0, 0.0]
-    tcp_gripper = p[0.0, 0.0, 0.1456, 0.0, 0.0, 0.0]
-    set_tcp(tcp_camera)
-    set_tcp(tcp_gripper)
-
-    #######################
-    # request pose_add data
-    #######################
-    socket_send_line("req_data", "socket_0")
-    sleep(0.1)
-    buf = socket_read_ascii_float(6, socket_name = "socket_0", timeout = 2)
-    p_tot = p[buf[1], buf[2], buf[3], 0.0, 0.0, buf[6]]
-
-    textmsg("tool flange: ", get_actual_tool_flange_pose())
-    set_tcp(tcp_camera)
-    p_ = get_actual_tcp_pose()
-    textmsg("p_: ", p_)
-    tool_pose = pose_trans(p_, p_tot)
-    textmsg("tool_pose: ", tool_pose)
-    set_tcp(tcp_gripper)
-
     ###################
     # gripper setup
     ###################
@@ -1995,6 +1970,31 @@ def pickup():
 
     #======    End of OnRobot twofg Run    ======#
     # end: URCap Installation Node
+
+    server_ip = "192.168.1.7"
+    port = 12345
+    socket_open(server_ip, port, "socket_0")
+
+    tcp_camera = p[-0.03, -0.06, 0.03, 0.0, 0.0, 0.0]
+    tcp_gripper = p[0.0, 0.0, 0.1456, 0.0, 0.0, 0.0]
+    set_tcp(tcp_camera)
+    set_tcp(tcp_gripper)
+
+    #######################
+    # request pose_add data
+    #######################
+    socket_send_line("req_data", "socket_0")
+    sleep(0.1)
+    buf = socket_read_ascii_float(6, socket_name = "socket_0", timeout = 2)
+    p_tot = p[buf[1], buf[2], buf[3], 0.0, 0.0, buf[6]]
+
+    textmsg("tool flange: ", get_actual_tool_flange_pose())
+    set_tcp(tcp_camera)
+    p_ = get_actual_tcp_pose()
+    textmsg("p_: ", p_)
+    tool_pose = pose_trans(p_, p_tot)
+    textmsg("tool_pose: ", tool_pose)
+    set_tcp(tcp_gripper)
 
     
     ###################
