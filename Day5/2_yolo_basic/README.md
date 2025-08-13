@@ -2,7 +2,17 @@
 
 이 강의에서는 객체 탐지(Object Detection)의 대표적인 딥러닝 모델인 YOLO(You Only Look Once)의 개념을 이해하고, 실제로 YOLO 모델을 설치 및 구성하여 이미지 내에서 사람을 검출하는 실습을 수행합니다.
 
----
+## 목차
+- [Lecture 2: YOLO를 활용한 비전 AI 실습](#lecture-2-yolo를-활용한-비전-ai-실습)
+  - [목차](#목차)
+  - [1. YOLO란?](#1-yolo란)
+  - [2. YOLO 환경 구성](#2-yolo-환경-구성)
+  - [3. Pretrained 모델을 이용한 Detection](#3-pretrained-모델을-이용한-detection)
+    - [추가질문](#추가질문)
+  - [4. 모델 Train 시키기](#4-모델-train-시키기)
+    - [추가 질문](#추가-질문)
+  - [5. 마무리](#5-마무리)
+
 
 ## 1. YOLO란?
 
@@ -14,7 +24,7 @@ YOLO는 이미지 전체를 한 번에 처리하여 객체의 위치와 클래�
 - End-to-End 학습 구조
 - 객체 탐지와 분류를 동시에 수행
 
----
+
 
 ## 2. YOLO 환경 구성
 
@@ -29,25 +39,56 @@ YOLO는 이미지 전체를 한 번에 처리하여 객체의 위치와 클래�
 pip install ultralytics
 ```
 
----
+
 
 ## 3. Pretrained 모델을 이용한 Detection
 
-#### 예제 코드 (`1_yolo_pretrained_detection.py`)
+#### 예제 코드 (`1_yolo_pretrained_detection.py`):
+```python
+from ultralytics import YOLO
+
+if __name__ == "__main__":
+	#가중치가 pretrain된 yolo11n 모델을 불러옵니다.
+	#model = YOLO("yolo11n.pt")
+	
+	#비어있는 yolo11n 모델을 생성합니다.
+	model = YOLO("yolo11n.yaml") 
+
+	#비어있는 yolo11n 모델을 생성한 후, 모델을 불러옵니다.
+	#model = YOLO("yolo11n.yaml").load("yolo11n.pt") 
+
+	results=model(source="image/dog.png",save=True)
+	results[0].show()  # Display results
+```
 
 - 해당코드는 yolo11n 모델을 생성하고, pretrained된 가중치 정보를 불러옵니다. 이후, 주어진 이미지에 대해 object detection을 수행합니다.
 
-##### 실행 결과
+#### 실행 결과
 
 - 사진에서 물체들이 성공적으로 감지되어 표시됩니다. 또한, `runs/detect/predict` 폴더에 detect된 이미지가 저장됩니다.
-- 사전 학습된 모델을 사용하지 않으면 어떤 결과가 발생할까요?
+
 <center><img src="image/dog_detected.png"></center>
 
----
+### 추가질문
+사전 학습된 모델을 사용하지 않으면 어떤 결과가 발생할까요?
+
 
 ## 4. 모델 Train 시키기
 
-#### 예제 코드 (`2_yolo_train.py`)
+#### 예제 코드 (`2_yolo_train.py`):
+```python
+from ultralytics import YOLO
+
+if __name__ == "__main__":
+	# Load a YOLO11n model
+	model = YOLO("yolo11n.yaml")
+
+	# Train the model on the COCO8 example dataset for 100 epochs
+	results = model.train(data="coco8.yaml", epochs=100, imgsz=640, device='cuda')
+
+	# Run inference with the YOLO11n model on the 'dog.png' image
+	results = model("image/dog.png", save=True)
+```
 
 - 해당코드는 yolo11n 모델을 생성하고, coco8 데이터셋을 이용하여 모델을 학습시킵니다.
 - coco8데이터셋은 총 8개의 이미지로 이루어져 있으며, 4개를 학습용 데이터로 사용하고 4개를 검증용 데이터로 사용합니다.
@@ -98,14 +139,14 @@ pip install ultralytics
 
 - (`3_yolo_train_pretrained.py`) 에서 저장한 가중치를 불러오고, 이를 이용하여 실시간으로 불러와지는 camera 영상에 object detection을 적용합니다.
 
----
 
-#### 추가 질문
+
+### 추가 질문
 - Epoch는 정해진 데이터셋을 이용하여 학습을 반복하는 횟수를 의미합니다. Epoch수가 과하게 커지게 되면, 모델에 어떤 문제가 생길 수 있을까요?
 
----
 
-## 마무리
+
+## 5. 마무리
 
 YOLO는 객체 탐지를 위한 매우 강력하면서도 빠른 도구로, 다양한 비전 AI 응용에 사용됩니다. 이번 실습에서는 YOLO를 설치하고 object detection 과정을 수행했습니다.
 

@@ -8,7 +8,18 @@
 - https://www.kaggle.com/code/tatianakushniruk/pcb-defect-detection-with-yolov8
 - https://www.kaggle.com/code/tatianakushniruk/pcb-defect-detection-with-yolov8/notebook
 
----
+
+## 목차
+- [Lecture 3: PCB 결함 탐지 실습](#lecture-3-pcb-결함-탐지-실습)
+  - [목차](#목차)
+  - [1. 데이터 셋 구조의 이해](#1-데이터-셋-구조의-이해)
+    - [추가 질문](#추가-질문)
+  - [2. 데이터 셋 전처리](#2-데이터-셋-전처리)
+  - [3. 데이터 셋 학습](#3-데이터-셋-학습)
+    - [더 해보기](#더-해보기)
+    - [추가 질문](#추가-질문-1)
+  - [4. 마무리](#4-마무리)
+
 
 ## 1. 데이터 셋 구조의 이해
 
@@ -25,7 +36,7 @@ YOLO 공식 사이트에서는 다양한 데이터셋을 기본으로 제공하�
 
 그러나, 이와 같은 사이트들에서 제공하는 데이터셋은 우리가 사용하는 인공지능 모델에 맞게 전처리되어 있지 않은 경우가 많습니다. 따라서, 데이터셋을 다운로드한 후에는 해당 데이터셋을 인공지능 모델이 학습할 수 있는 형태로 변환하는 과정이 필요합니다.
 
-https://www.kaggle.com/code/tatianakushniruk/pcb-defect-detection-with-yolov8 에는 이번 실습에 활용할 결함이 포함된 PCB 이미지 데이터셋이 담겨져 있습니다. 해당 Kaggle 데이터셋 폴더는 다음과 같이 구성되어 있습니다.
+https://www.kaggle.com/code/tatianakushniruk/pcb-defect-detection-with-yolov8 에는 이번 실습에 활용할 결함이 포함된 PCB 이미지 데이터셋이 담겨져 있습니다. 해당 **Kaggle** 데이터셋 폴더는 다음과 같이 구성되어 있습니다.
 
 ```
 dataset_pre/
@@ -38,9 +49,9 @@ dataset_pre/
     - *.xml
 ```
 
-현재 데이터셋 폴더는 images와 Annotations 폴더로 나누어져 있고, 각각의 폴더 안에 결함 종류에 따른 하위 폴더가 존재합니다.
+현재 데이터셋 폴더는 **images**와 **Annotations** 폴더로 나누어져 있고, 각각의 폴더 안에 결함 종류에 따른 하위 폴더가 존재합니다.
 
-Annotations 폴더안에는 images 폴더에 들어있는 그림 파일들과 대응되는 이름을 가진 XML 파일들이 있습니다. 이 XML 파일들은 각 이미지에 대한 라벨 정보를 담고 있습니다. 예를 들어, `Missing_hole_1.jpg`라는 이미지에 대한 XML 파일은 다음과 같은 형태입니다:
+**Annotations** 폴더안에는 **images** 폴더에 들어있는 그림 파일들과 대응되는 이름을 가진 XML 파일들이 있습니다. 이 XML 파일들은 각 이미지에 대한 라벨 정보를 담고 있습니다. 예를 들어, `Missing_hole_1.jpg`라는 이미지에 대한 XML 파일은 다음과 같은 형태입니다:
 ```xml
 <annotation>
     <folder>images</folder>
@@ -71,9 +82,9 @@ Annotations 폴더안에는 images 폴더에 들어있는 그림 파일들과 �
 
 위와 같은 데이터셋을 YOLO11 Detection 모델에서 사용하기 위해서는, 다음과 같은 변환 과정을 거쳐야 합니다.
 
-1. 주석(Label) 파일 형식 수정
-2. Train, Valid, Test 셋 구분
-3. `data.yaml` 생성
+> 1. 주석(Label) 파일 형식 수정
+> 2. Train, Valid, Test 셋 구분
+> 3. `data.yaml` 생성
 
 #### 1. 주석(Label) 파일 형식 수정
 
@@ -85,7 +96,7 @@ Annotations 폴더안에는 images 폴더에 들어있는 그림 파일들과 �
 0 0.23 0.31 0.16 0.21
 ```
 
-이때, 위 숫자들은 차례대로 **클래스ID, 중심x좌표, 중심y좌표, 너비, 높이**를 나타냅니다. 중심 좌표와 너비, 높이는 이미지 크기에 대한 상대적인 값으로 표현됩니다.
+이때, 위 숫자들은 차례대로 **클래스ID, 중심 x좌표, 중심 y좌표, 너비, 높이**를 나타냅니다. 중심 좌표와 너비, 높이는 이미지 크기에 대한 상대적인 값으로 표현됩니다.
 
 <center><img src="image/ex2.png" width=80%></center>
 
@@ -112,12 +123,11 @@ names:
   5: spurious_copper
 ```
 
-#### 추가 질문
+### 추가 질문
 
-- Train 셋은 70%, Valid 셋은 20%, Test 셋은 10%의 비율로 나누는 것이 일반적입니다.
-	- Train 셋의 비율이 과하게 높으면 어떤 문제점이 발생할 수 있을까요?
+- Train 셋은 70%, Valid 셋은 20%, Test 셋은 10%의 비율로 나누는 것이 일반적입니다. Train 셋의 비율이 과하게 높으면 어떤 문제점이 발생할 수 있을까요?
 
----
+
 
 ## 2. 데이터 셋 전처리
 
@@ -158,11 +168,10 @@ Spurious_copper                     116 images              116 annotations
 
 이후, 기존 데이터셋 폴더에 output이라는 폴더가 추가되어 YOLO11n Detection모델에 사용하는 데이터 셋을 얻을 수 있습니다.
 
----
 
 ## 3. 데이터 셋 학습
 
-`2_train.py`를 실행해 줍시다. 
+`2_train.py`를 실행합니다. 
 
 ```python
 from ultralytics import YOLO
@@ -182,13 +191,13 @@ if __name__ == '__main__':
 
 <center><img src="image/pred.png" width=80%></center>
 
-#### 더 해보기
+### 더 해보기
 - 학습이 완료된 뒤, 저장된 가중치를 모델로 불러오는 코드를 작성해 봅시다. 이후 해당 모델을 사용하여 임의의 PCB 이미지에 대한 결함 탐지를 수행해 봅시다.
 
-#### 추가 질문
+### 추가 질문
 - 위와 같은 기술을 응용하여, PCB 결함 탐지 이외에 어떤 분야의 산업에서 활용할 수 있을까요?
 
----
 
-## 마무리
+
+## 4. 마무리
 해당 실습에서는 Yolo11 모델을 이용하여 실제 산업에서 활용할만한 PCB 결함 탐지 모델을 학습하는 과정을 진행했습니다. 다음 실습에서는 YOLO classification모델을 이용하여 자동화 과일 분류 시스템을 실습해 보도록 하겠습니다. 
