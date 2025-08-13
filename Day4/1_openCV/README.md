@@ -2,6 +2,41 @@
 
 이 문서는 YOLO와 같은 딥러닝 모델에 이미지를 입력하기 전, OpenCV를 활용하여 전처리를 수행하는 주요 기법들을 정리한 실습 가이드입니다. 각 기법에 대한 개념과 예제 코드를 단계적으로 소개합니다.
 
+## 목차
+- [Lecture 1: OpenCV 이미지 전처리 실습 가이드](#lecture-1-opencv-이미지-전처리-실습-가이드)
+  - [OpenCV란?](#opencv란)
+  - [설치 방법](#설치-방법)
+    - [1단계: 터미널(명령 프롬프트) 열기](#1단계-터미널명령-프롬프트-열기)
+    - [2단계: pip로 OpenCV 설치하기](#2단계-pip로-opencv-설치하기)
+  - [matplotlib이란?](#matplotlib이란)
+  - [설치 방법](#설치-방법-1)
+  - [목차](#목차)
+  - [1. 이미지 불러오기와 보여주기](#1-이미지-불러오기와-보여주기)
+    - [실습 경로 설정 팁](#실습-경로-설정-팁)
+  - [2. 블러 처리 (Blur)](#2-블러-처리-blur)
+    - [2.1 평균 블러 (Average Blur)](#21-평균-블러-average-blur)
+    - [2.2 가우시안 블러 (Gaussian Blur)](#22-가우시안-블러-gaussian-blur)
+    - [2.3 미디안 블러 (Median Blur)](#23-미디안-블러-median-blur)
+    - [2.4 양방향 필터 (Bilateral Filter)](#24-양방향-필터-bilateral-filter)
+    - [2.5 블러 처리 요약 및 정리](#25-블러-처리-요약-및-정리)
+  - [3. 엣지 검출 (Canny Edges)](#3-엣지-검출-canny-edges)
+    - [1단계: Grayscale 변환](#1단계-grayscale-변환)
+    - [2단계: Gaussian Blur 적용](#2단계-gaussian-blur-적용)
+    - [3단계: Canny Edge Detection](#3단계-canny-edge-detection)
+  - [4. 윤곽선 추출 (Contours)](#4-윤곽선-추출-contours)
+    - [1단계: 이미지 로드 및 Grayscale 변환](#1단계-이미지-로드-및-grayscale-변환)
+    - [2단계: Gaussian Blur 적용 + Canny 엣지 검출](#2단계-gaussian-blur-적용--canny-엣지-검출)
+    - [3단계: 윤곽선 추출 및 시각화](#3단계-윤곽선-추출-및-시각화)
+    - [함수 설명:](#함수-설명)
+  - [5. 바운딩 박스 (Bounding Box)](#5-바운딩-박스-bounding-box)
+    - [1단계: 이미지 불러오기 및 전처리](#1단계-이미지-불러오기-및-전처리)
+    - [2단계: 윤곽선 추출](#2단계-윤곽선-추출)
+    - [3단계: 바운딩 박스 그리기](#3단계-바운딩-박스-그리기)
+    - [함수 설명](#함수-설명-1)
+  - [6. 마무리](#6-마무리)
+    - [학습한 주요 기법 요약](#학습한-주요-기법-요약)
+
+
 ## OpenCV란?
 
 OpenCV(Open Source Computer Vision Library)는 실시간 컴퓨터 비전 및 이미지 처리에 사용되는 오픈소스 라이브러리입니다. Python, C++, Java 등 다양한 언어를 지원하며, 객체 인식, 얼굴 검출, 이미지 필터링, 윤곽선 추출 등의 작업에 활용됩니다.
@@ -47,42 +82,6 @@ pip install matplotlib
 ```
 
 이제부터는 OpenCV를 이용해 이미지를 불러오고, 처리하고, 시각화하는 방법을 단계적으로 배워보겠습니다.
-
-
-## 목차
-- [Lecture 1: OpenCV 이미지 전처리 실습 가이드](#lecture-1-opencv-이미지-전처리-실습-가이드)
-  - [OpenCV란?](#opencv란)
-  - [설치 방법](#설치-방법)
-    - [1단계: 터미널(명령 프롬프트) 열기](#1단계-터미널명령-프롬프트-열기)
-    - [2단계: pip로 OpenCV 설치하기](#2단계-pip로-opencv-설치하기)
-  - [matplotlib이란?](#matplotlib이란)
-  - [설치 방법](#설치-방법-1)
-  - [목차](#목차)
-  - [1. 이미지 불러오기와 보여주기](#1-이미지-불러오기와-보여주기)
-    - [실습 경로 설정 팁](#실습-경로-설정-팁)
-  - [2. 블러 처리 (Blur)](#2-블러-처리-blur)
-    - [2.1 평균 블러 (Average Blur)](#21-평균-블러-average-blur)
-    - [2.2 가우시안 블러 (Gaussian Blur)](#22-가우시안-블러-gaussian-blur)
-    - [2.3 미디안 블러 (Median Blur)](#23-미디안-블러-median-blur)
-    - [2.4 양방향 필터 (Bilateral Filter)](#24-양방향-필터-bilateral-filter)
-    - [2.5 블러 처리 요약 및 정리](#25-블러-처리-요약-및-정리)
-  - [3. 엣지 검출 (Canny Edges)](#3-엣지-검출-canny-edges)
-    - [1단계: Grayscale 변환](#1단계-grayscale-변환)
-    - [2단계: Gaussian Blur 적용](#2단계-gaussian-blur-적용)
-    - [3단계: Canny Edge Detection](#3단계-canny-edge-detection)
-  - [4. 윤곽선 추출 (Contours)](#4-윤곽선-추출-contours)
-    - [1단계: 이미지 로드 및 Grayscale 변환](#1단계-이미지-로드-및-grayscale-변환)
-    - [2단계: Gaussian Blur 적용 + Canny 엣지 검출](#2단계-gaussian-blur-적용--canny-엣지-검출)
-    - [3단계: 윤곽선 추출 및 시각화](#3단계-윤곽선-추출-및-시각화)
-    - [함수 설명:](#함수-설명)
-  - [5. 바운딩 박스 (Bounding Box)](#5-바운딩-박스-bounding-box)
-    - [1단계: 이미지 불러오기 및 전처리](#1단계-이미지-불러오기-및-전처리)
-    - [2단계: 윤곽선 추출](#2단계-윤곽선-추출)
-    - [3단계: 바운딩 박스 그리기](#3단계-바운딩-박스-그리기)
-    - [함수 설명](#함수-설명-1)
-  - [6. 마무리](#6-마무리)
-    - [학습한 주요 기법 요약](#학습한-주요-기법-요약)
-
 
 
 

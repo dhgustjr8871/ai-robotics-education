@@ -28,8 +28,7 @@ $$
     x_{\text{distorted}} = x \left( 1 + k_1 r^2 + k_2 r^4 + k_3 r^6 \right) \\
     y_{\text{distorted}} = y \left( 1 + k_1 r^2 + k_2 r^4 + k_3 r^6 \right)
     $$
-
-    <center><img src="./image/radial_dist.png" title="rad"/></center>
+    <img src="./image/radial_dist.png" title="rad"/>
 - **Tangentional diostortion (접선왜곡)**:
   - 카메라 렌즈와 이미지 센서(CCD, CMOS)의 수평이 맞지 않아 발생하는 왜곡이며, 중심으로부터 타원 형태의 왜곡을 발생시킵니다.
   - 왜곡의 정도는 다음과 식으로 모델링됩니다. 
@@ -37,7 +36,7 @@ $$
     x_{distorted} = x + [ 2p_1xy + p_2(r^2+2x^2)] \\
     y_{distorted} = y + [ p_1(r^2+ 2y^2)+ 2p_2xy]
     $$
-    <center><img src="./image/tangentional_dist.png" title="tan"/></center>
+    <img src="./image/tangentional_dist.png" title="tan"/>
 
 왜곡의 모델링에서 사용되는 계수 $k_1, k_2, p_1, p_2, k_3$ 구할 수 있다면 각 좌표에서 발생하는 방사왜곡과 접선왜곡의 정도를 구할 수 있습니다. 이를 이용하여 왜곡을 제거한 image를 구하면 Camera Calibration을 수행할 수 있을 것 입니다.
 
