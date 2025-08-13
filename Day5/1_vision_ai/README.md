@@ -34,13 +34,23 @@
 | **추적(Tracking)**           | 특정 객체를 시간적으로 추적                   |
 | **자세 추정(Pose Estimation)** | 물체 또는 사람의 관절/위치 추정                |
 
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/Avpce9ouYJQ?si=cQBtXFsOeHLXL1CM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<p align="center">
+  <a href="https://youtu.be/Avpce9ouYJQ">
+    <img src="https://img.youtube.com/vi/Avpce9ouYJQ/maxresdefault.jpg" alt="시연 영상" width="80%">
+  </a>
+  <p align="center">
+  ▲ 이미지를 클릭하면 YouTube에서 영상을 볼 수 있습니다.
+</p>
 
 **Detection 모델 예시**
 
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/D1LQPbYCc4o?si=eZSXq2-sNebzd9nW" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<p align="center">
+  <a href="https://youtu.be/D1LQPbYCc4o">
+    <img src="https://img.youtube.com/vi/D1LQPbYCc4o/maxresdefault.jpg" alt="시연 영상" width="80%">
+  </a>
+  <p align="center">
+  ▲ 이미지를 클릭하면 YouTube에서 영상을 볼 수 있습니다.
+</p>
 
 **Pose Estimation 모델 예시**
 
@@ -53,7 +63,7 @@
 2. **전처리**: 크기 조정, 정규화, 증가 등
 3. **모델 학습**: CNN 기반 모델(YOLO, ResNet 등)을 데이터에 맞공 학습
 4. **추론**: 새로운 데이터에 대한 예측 수행
-5. **후처리**: NMS(비최대 엄제), 좌표 변환 등
+5. **후처리**: 좌표 변환 등
 
 ## 4. 비전 AI의 원리
 
@@ -65,7 +75,7 @@
 
 #### 2.2. 합성곱(Convolution)
 - **수학식**:  
-  $ (I * K)(x, y) = Σ_i Σ_j I(x+i, y+j) · K(i, j) $ 
+  $(I * K)(x, y) = Σ_i Σ_j I(x+i, y+j) · K(i, j)$ 
   여기서  
   - I = 입력 이미지  
   - K = 필터(커널)  
