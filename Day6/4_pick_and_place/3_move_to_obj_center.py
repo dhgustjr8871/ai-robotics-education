@@ -40,20 +40,11 @@ async def handle_client(reader, writer):
             if not data:
                 break
             message = data.decode('utf-8').rstrip()  # Remove trailing newline
-
             print(f"Received from {addr}: {message}")
 
-            if message == "current_pos":
-                print("Received position data request")
-                p_ = await handle_pos_data(reader)
-                print2(f"p_: {p_}", Color.GREEN)
-                q_ = await handle_pos_data(reader)
-                print2(f"q_: {q_}", Color.GREEN)
-            elif message == "req_data":
+            if message == "req_data":
                 print("Received data request")
-                p_rel = np.array([pos_3d[0], pos_3d[1], pos_3d[2], 0.0, 0.0, 0.0])
-                p_cam = ([-0.015, -0.06, 0.0, 0.0, 0.0, 0.0])
-                arr = p_rel
+                arr = np.array([pos_3d[0], pos_3d[1], pos_3d[2], 0.0, 0.0, 0.0])
                 print(arr)
                 float_string = "({})\n".format(','.join(map(str, arr)))
                 writer.write(float_string.encode())
@@ -66,18 +57,6 @@ async def handle_client(reader, writer):
     finally:
         print(f"Connection with {addr} closed")
         writer.close()
-
-
-async def handle_pos_data(reader):
-    integers_data = []
-    # Receive 24 bytes (6 integers = 6 * 4 bytes = 24 bytes) 
-    data = await reader.readexactly(24)
-    # Unpack the 6 short integers from the received data
-    print("position data:", data)
-    integers_data = struct.unpack('>iiiiii', data)
-    actual_pos_data = [x/10000 for x in integers_data]
-
-    return actual_pos_data
 
 async def main(host='0.0.0.0', port=12345):
     server = await asyncio.start_server(handle_client, host, port)
