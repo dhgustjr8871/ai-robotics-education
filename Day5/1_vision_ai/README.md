@@ -98,7 +98,7 @@
 #### 2.6. 학습 과정
 - 모델은 **손실함수(Loss Function)** 를 최소화하도록 학습
 - 예: 분류 문제에서 자주 쓰는 **교차엔트로피 손실**  
-  L = -Σ_i y_i log(ŷ_i)
+  $L = -Σ_i y_i log(ŷ_i)$
 - **역전파(Backpropagation)** 로 가중치(필터 값)를 업데이트  
   → 경사하강법(Gradient Descent) 사용
 
