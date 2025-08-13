@@ -37,13 +37,7 @@ async def handle_client(reader, writer):
 
             print(f"Received from {addr}: {message}")
 
-            if message == "current_pos":
-                print("Received position data request")
-                p_ = await handle_pos_data(reader)
-                print2(f"p_: {p_}", Color.GREEN)
-                q_ = await handle_pos_data(reader)
-                print2(f"q_: {q_}", Color.GREEN)
-            elif message == "req_data":
+            if message == "req_data":
                 print("Received data request")
                 p_goal = [0.321, -0.008, 0.164, -0.3705, 3.1108, 0.038]
                 p_rel = [0.0, 0.0, -0.10, 0.0, 0.0, 0.0]
@@ -54,8 +48,6 @@ async def handle_client(reader, writer):
 
                 await writer.drain()
 
-            # writer.write(data)  # Echo back the received message
-            # await writer.drain()
     except asyncio.CancelledError:
         pass
     except ConnectionResetError:
@@ -63,17 +55,6 @@ async def handle_client(reader, writer):
     finally:
         print(f"Connection with {addr} closed")
         writer.close()
-
-async def handle_pos_data(reader):
-    integers_data = []
-    # Receive 24 bytes (6 integers = 6 * 4 bytes = 24 bytes) 
-    data = await reader.readexactly(24)
-    # Unpack the 6 short integers from the received data
-    print("position data:", data)
-    integers_data = struct.unpack('>iiiiii', data)
-    actual_pos_data = [x/10000 for x in integers_data]
-
-    return actual_pos_data
 
 async def main(host='127.0.0.1', port=12345):
     server = await asyncio.start_server(handle_client, host, port)

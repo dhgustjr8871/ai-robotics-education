@@ -1,3 +1,4 @@
+# 6.2 로봇의 pose를 받아오는 파이썬
 import asyncio
 import socket
 import struct
@@ -22,7 +23,7 @@ PORT_SECONDARY_CLIENT = 30002
 
 server_ip = "192.168.1.8" 
 robot_ip = "192.168.1.6"
-script_path = "scripts/socket_get_position1.script"
+script_path = "scripts/get_position1.script"
 
 async def handle_client(reader, writer):
     addr = writer.get_extra_info('peername')

@@ -1,17 +1,18 @@
-# Primary interface
+# 3. 스크립트 파일 전송하기
 import socket
 
 PORT_PRIMARY_CLIENT = 30001
 PORT_SECONDARY_CLIENT = 30002
 
+robot_ip = "192.168.1.6"
+script_path = "scripts/helloworld.script"
+# script_path = "scripts/slowmove.script"
+# script_path = "scripts/freedrive.script"
+# script_path = "scripts/io_control.script"
 
-## Phase2: elaborate the functions
 def getScriptFromPath(script_path):
-    # Open the file in read mode
-    with open(script_path, 'r', encoding='utf-8') as file:
-        # Read the contents of the file
+    with open(script_path, 'r') as file:
         script = file.read()
-        # print(script)
     return script
 
 def sendScript(robot_url, script, port=PORT_PRIMARY_CLIENT):
@@ -25,13 +26,8 @@ def sendScriptFile(robot_url, script_path, port=PORT_PRIMARY_CLIENT):
     sendScript(robot_url, script, port)
 
 if __name__ == "__main__":
-    robot_url = "192.168.1.6"
-    # script_path = "scripts/helloworld.script"
-    script_path = "scripts/slowmove.script"
-    # script_path = "scripts/freedrive.script"
-    # script_path = "scripts/io_control.script"
-    sendScriptFile(robot_url, script_path, PORT_PRIMARY_CLIENT)
-    # sendScriptFile(robot_url, script_path, PORT_SECONDARY_CLIENT)
+    sendScriptFile(robot_ip, script_path, PORT_PRIMARY_CLIENT)
+    # sendScriptFile(robot_ip, script_path, PORT_SECONDARY_CLIENT)
 
 
 

@@ -1,3 +1,4 @@
+### 8.1 현재 pose를 기준으로 하여 이동할 상대 pose를 전송하는 파이썬
 import asyncio
 import socket
 import struct
@@ -22,56 +23,47 @@ PORT_SECONDARY_CLIENT = 30002
 
 server_ip = "192.168.1.5"
 robot_ip = "192.168.1.4"
-script_path = "scripts/socket_set_position1.script"
+script_path = "scripts/set_position1.script"
 
 async def handle_client(reader, writer):
+    # 클라이언트 소켓 주소(IP, Port) 가져오기
     addr = writer.get_extra_info('peername')
     print(f"Connected by {addr}")
     
     try:
         while True:
+            # 클라이언트로부터 최대 1024바이트 데이터 수신
             data = await reader.read(1024)
-            if not data:
+            if not data:  # 연결 종료 시 루프 탈출
                 break
-            message = data.decode('utf-8').rstrip()  # Remove trailing newline
 
+            # 수신 데이터를 UTF-8로 디코딩하고 개행 제거
+            message = data.decode('utf-8').rstrip()
             print(f"Received from {addr}: {message}")
 
-            if message == "current_pos":
-                print("Received position data request")
-                p_ = await handle_pos_data(reader)
-                print2(f"p_: {p_}", Color.GREEN)
-                q_ = await handle_pos_data(reader)
-                print2(f"q_: {q_}", Color.GREEN)
-            elif message == "req_data":
+            # "req_data" 요청을 받았을 경우
+            if message == "req_data":
                 print("Received data request")
-                p_rel = [0.0, 0.1, 0.0, 0.0, 0.0, 0.0]
+                
+                # 전송할 Pose 데이터 (상대 좌표 예제)
+                p_rel = [0.0, 0.1, 0.0, 0.0, 0.0, 0.0]  # x, y, z, rx, ry, rz
+                
+                # 리스트를 쉼표로 연결하여 문자열로 변환하고 괄호로 감싸기
                 float_string = "({})\n".format(','.join(map(str, p_rel)))
-                writer.write(float_string.encode())
-                await writer.drain()
-            
+                
+                writer.write(float_string.encode()) # UTF-8 인코딩 후 클라이언트로 전송
+                await writer.drain()  # 버퍼가 비워질 때까지 대기
+
     except asyncio.CancelledError:
+        # asyncio에서 태스크가 취소될 경우 예외 처리
         pass
     except ConnectionResetError:
+        # 클라이언트 연결이 비정상적으로 종료된 경우
         print(f"Connection with {addr} reset")
-    # except Exception as e:
-    #     print("Error:", e)
     finally:
+        # 연결 종료 처리
         print(f"Connection with {addr} closed")
         writer.close()
-        # await writer.wait_closed()
-
-
-async def handle_pos_data(reader):
-    integers_data = []
-    # Receive 24 bytes (6 integers = 6 * 4 bytes = 24 bytes) 
-    data = await reader.readexactly(24)
-    # Unpack the 6 short integers from the received data
-    print("position data:", data)
-    integers_data = struct.unpack('>iiiiii', data)
-    actual_pos_data = [x/10000 for x in integers_data]
-
-    return actual_pos_data
 
 async def main(host='0.0.0.0', port=12345):
     server = await asyncio.start_server(handle_client, host, port)
