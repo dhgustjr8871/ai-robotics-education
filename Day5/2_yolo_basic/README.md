@@ -52,7 +52,7 @@ pip install ultralytics
 - 해당코드는 yolo11n 모델을 생성하고, coco8 데이터셋을 이용하여 모델을 학습시킵니다.
 - coco8데이터셋은 총 8개의 이미지로 이루어져 있으며, 4개를 학습용 데이터로 사용하고 4개를 검증용 데이터로 사용합니다.
 
-##### 실행 결과
+#### 실행 결과
 
 - 학습과정에서, 터미널에 다음과 같이 출력됩니다.
 ```
@@ -79,14 +79,14 @@ pip install ultralytics
 - `runs/detect/train` 폴더에 train의 결과가 저장됩니다.
 - `runs/detect/train/val_batch0_pred.jpg` 에 검증용 데이터셋에 대한 검증 결과가 저장됩니다. `runs/detect/train/val_batch0_labels.jpg`와 비교해 봤을 때 검증에 실패함을 확인할 수 있습니다.
 
-##### 실패 원인
+#### 실패 원인
 
 - coco8은 주로 코드 테스트용으로 활용되는 데이터셋으로, 실제 의미있는 학습을 하기에는 데이터셋의 양이 적습니다.
 - 데이터셋의 양이 적을때는, `3_yolo_train_pretrained.py`와 같이 pretrained된 모델을 불러온 뒤 그 지점에서 부터 가중치를 개선해나가는 것이 권장됩니다. 
 
 #### 예제 코드 (`3_yolo_train_pretrained.py`)
 
-##### 실행 결과
+#### 실행 결과
 
 - `runs/detect/train` 폴더에 train의 결과가 저장됩니다.
 - `runs/detect/train/val_batch0_pred.jpg` 에 검증용 데이터셋에 대한 검증 결과가 저장됩니다. `runs/detect/train/val_batch0_labels.jpg`와 비교해 봤을 때 검증에 성공함을 확인할 수 있습니다.
@@ -94,7 +94,7 @@ pip install ultralytics
 
 #### 예제 코드 (`4_load_trained_model.py`)
 
-##### 실행 결과
+#### 실행 결과
 
 - (`3_yolo_train_pretrained.py`) 에서 저장한 가중치를 불러오고, 이를 이용하여 실시간으로 불러와지는 camera 영상에 object detection을 적용합니다.
 
