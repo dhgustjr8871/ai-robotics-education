@@ -71,7 +71,7 @@
 
 ## 1.2 노트북의 IP 주소 확인 방법
 <div align="center">
-  <img src="./readmeImages/laptop_ipconfig.jpg" alt="image" style="width:100%;">
+  <img src="./readmeImages/laptop_ipconfig.png" alt="image" style="width:100%;">
 </div>
 
 랜선을 연결한 뒤 노트북의 `cmd`창에서 `ipconfig` 명령어를 입력합니다. 이때 연결된 `Ethernet`의 `IPv4 Address를` 앞으로 `server_ip`에 입력하면 됩니다. 
@@ -267,7 +267,7 @@ UR 로봇을 제어할 때, `pose`와 `joint` 파라미터는 서로 다른 방�
 로봇의 TCP(Tool Center Point)의 위치와 방향을 나타내는 파라미터입니다. 이는 일반적으로 6개의 요소로 구성되며, 첫 세 가지는 X, Y, Z 좌표를 나타내고 나머지 세 가지는 롤(roll), 피치(pitch), 요(yaw) 각도를 나타냅니다. 아래 그림을 통해 롤, 피치, 요를 더 잘 이해할 수 있습니다. pose 파라미터를 사용하면 로봇의 TCP가 공간에서 특정 위치와 방향을 취하도록 설정할 수 있습니다. 이는 주로 작업의 끝점을 정의하거나 특정 궤적을 따라 이동할 때 사용됩니다.
 
 <p align="center">
-  <img src="readmeimages/RollPitchYaw.jpg" alt="Roll, Pitch, Yaw 축 방향 - 비행기 모델">
+  <img src="readmeImages/RollPitchYaw.jpg" alt="Roll, Pitch, Yaw 축 방향 - 비행기 모델">
 </p>  
 
 <p align="center">
