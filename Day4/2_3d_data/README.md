@@ -2,6 +2,29 @@
 
 이 교육은 Intel RealSense 카메라를 활용하여 2D 이미지와 3D 거리 데이터를 실시간으로 수집하고, 이를 시각화 및 분석하는 과정을 단계적으로 학습합니다. 실습을 통해 RealSense의 영상을 받아오는 방법, 3D data를 처리하는 방법 등을 학습합니다. 
 
+## 목차
+- [Lecture 2: RealSense를 활용한 3차원 데이터 이해 실습](#lecture-2-realsense를-활용한-3차원-데이터-이해-실습)
+  - [목차](#목차)
+  - [0. RealSense란?](#0-realsense란)
+    - [RealSense 카메라의 원리와 종류](#realsense-카메라의-원리와-종류)
+    - [준비 사항](#준비-사항)
+  - [1. 실시간 RGB + Depth 시각화](#1-실시간-rgb--depth-시각화)
+    - [주요 함수 및 역할](#주요-함수-및-역할)
+    - [실행 결과](#실행-결과)
+  - [2. Intrinsics 파라미터 확인 및 중심 픽셀 3D 위치 추출](#2-intrinsics-파라미터-확인-및-중심-픽셀-3d-위치-추출)
+    - [주요 함수 및 역할](#주요-함수-및-역할-1)
+    - [출력 예시](#출력-예시)
+  - [3. 마우스 클릭으로 픽셀 → 3D 좌표 변환 실습](#3-마우스-클릭으로-픽셀--3d-좌표-변환-실습)
+    - [주요 함수 및 역할](#주요-함수-및-역할-2)
+    - [실행 결과](#실행-결과-1)
+  - [4. 자세 인식과 6DoF 개념 확장](#4-자세-인식과-6dof-개념-확장)
+    - [6자유도 (6 Degrees of Freedom, 6DoF)란?](#6자유도-6-degrees-of-freedom-6dof란)
+    - [왜 6DoF가 중요한가? (로봇 조작 관점)](#왜-6dof가-중요한가-로봇-조작-관점)
+    - [자세 추정(Pose Estimation) 방법](#자세-추정pose-estimation-방법)
+    - [Pick-and-Place 작업에서의 6DoF 적용 흐름](#pick-and-place-작업에서의-6dof-적용-흐름)
+  - [5. 마무리](#5-마무리)
+
+
 ## 0. RealSense란?
 
 Intel에서 개발한 **RGB-D 카메라**로, RGB 영상과 Depth 영상(거리 정보를 담은 이미지)을 동시에 제공합니다. RealSense 시리즈는 컴퓨터 비전 기반의 3D 인식 기능을 필요로 하는 다양한 애플리케이션(로봇, 드론, 증강현실, 사람 인식 등)에 널리 사용됩니다.
@@ -153,8 +176,13 @@ Clicked Pixel: (312, 254)
 | **Pitch** | 옆 방향 축을 기준으로 위아래로 기울임 (고개 끄덕이기) |
 | **Yaw**   | 위에서 보는 방향 기준 좌우 회전 (방향 바꾸기) |
 
-![Roll, Pitch, Yaw 축 방향 - 비행기 모델](images/RollPitchYaw.jpg)  
-출처: [Wikipedia - Aircraft principal axes](https://en.wikipedia.org/wiki/Aircraft_principal_axes)
+<p align="center">
+  <img src="readmeimages/RollPitchYaw.jpg" alt="Roll, Pitch, Yaw 축 방향 - 비행기 모델">
+</p>  
+
+<p align="center">
+  출처: <a href="https://en.wikipedia.org/wiki/Aircraft_principal_axes">Wikipedia - Aircraft principal axes</a>
+</p>
 
 > **6DoF = 3D 위치 + 3D 방향**
 

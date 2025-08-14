@@ -29,7 +29,7 @@ PORT_SECONDARY_CLIENT = 30002
 
 server_ip = "192.168.1.7"
 robot_ip = "192.168.1.6"
-script_path = "scripts/socket_init_pose.script"
+script_path = "scripts/init_pose.script"
 
 async def handle_client(reader, writer):
     addr = writer.get_extra_info('peername')
@@ -55,12 +55,9 @@ async def handle_client(reader, writer):
         pass
     except ConnectionResetError:
         print(f"Connection with {addr} reset")
-    # except Exception as e:
-    #     print("Error:", e)
     finally:
         print(f"Connection with {addr} closed")
         writer.close()
-        # await writer.wait_closed()
 
 async def main(host='0.0.0.0', port=12345):
     server = await asyncio.start_server(handle_client, host, port)

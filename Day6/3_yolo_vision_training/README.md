@@ -1,6 +1,14 @@
 # Lecture 3: Pick and Place - YOLO 모델 학습
 
-## 주의점
+## 목차
+- [Lecture 3: Pick and Place - YOLO 모델 학습](#lecture-3-pick-and-place---yolo-모델-학습)
+  - [목차](#목차)
+  - [0. 주의점](#0-주의점)
+  - [1. YOLOv11 Detection 모델 학습](#1-yolov11-detection-모델-학습)
+  - [2. YOLO OBB 모델 학습](#2-yolo-obb-모델-학습)
+
+
+## 0. 주의점
 
 성공적인 YOLO모델 학습을 위해서는 100장 정도의 충분한 양의 데이터셋이 필요합니다. 데이터셋이 충분히 수집되지 않았다면, 사전 제공되는 데이터셋을 이용하여 실습을 진행해도 무방합니다.
 
