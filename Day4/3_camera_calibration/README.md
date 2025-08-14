@@ -49,16 +49,69 @@ Camera Calibration을 수행하기 위해서는 보정하고자 하는 이미지
 
 #### 주요 함수 및 역할
 
-- `cv2.findChessboardCorners()`: 주어진 이미지에서 체커보드 격자판의 꼭짓점을 감지합니다.
-- `cv2.drawChessboardCorners()`: 이미지에 감지된 체커보드를 표시합니다.  
-- `cv2.calibrateCamera()`: 체커보드를 이용하여 구한 3차원 좌표와 2차원 픽셀 좌표를 매칭시켜 intrinsic parameter들을 계산합니다.
+```python
+# Vector for 3D points 
+threedpoints = [] 
+# Vector for 2D points 
+twodpoints = [] 
+# 3D points real world coordinates 
+objectp3d = np.zeros((1, CHECKERBOARD[0] 
+					* CHECKERBOARD[1], 
+					3), np.float32) 
+objectp3d[0, :, :2] = np.mgrid[0:CHECKERBOARD[0], 
+							0:CHECKERBOARD[1]].T.reshape(-1, 2) 
+```
+- `threedpoints`: 3차원 좌표를 저장할 리스트입니다.
+- `twodpoints`: 2차원 좌표를 저장할 리스트입니다.
+- 이후 `objectp3d`는 체커보드의 각 꼭짓점의 3차원 좌표를 저장합니다. `CHECKERBOARD`는 체커보드의 크기를 나타내며, `np.mgrid`를 이용하여 2차원 격자 형태로 좌표를 생성합니다.
 
+```python
+images = glob.glob(os.path.join("camera_params","calibration_data","*.jpg"))
 
-#### 실행 결과
+for filename in images: 
+	image = cv2.imread(filename) 
+```
+- 폴더 경로내에 있는 모든 jpg 파일을 차례로 읽어와서 cv2로 읽은 뒤 image변수로 저장합니다.
 
-- `camera_params\calibration_data` 폴더에 들어있는 사진들에 체커보드가 인식된 결과를 차례대로 표시
-- 구한 3차원 좌표와 2차원 좌표를 매핑하여 Intrinsic Parameter 출력
-- Intrinsic Parameter를 `camera_params\camera_intrinsic.json`에 저장
+```python
+ret, corners = cv2.findChessboardCorners( 
+        grayColor, CHECKERBOARD, 
+        cv2.CALIB_CB_ADAPTIVE_THRESH 
+        + cv2.CALIB_CB_FAST_CHECK +
+        cv2.CALIB_CB_NORMALIZE_IMAGE) 
+```
+- 주어진 이미지에서 체커보드 격자판의 꼭짓점을 감지합니다. 인자로는 이미지의 흑백사진 (`grayColor`), 체커보드의 크기 (`CHECKERBOARD`), 그리고 기타 감지 옵션들이 있습니다. 
+- 반환값은 감지 성공 여부 (`ret`)와 감지된 꼭짓점들의 좌표 (`corners`)입니다.
+
+```python
+if ret == True: 
+  threedpoints.append(objectp3d) 
+  # Refining pixel coordinates for given 2d points. 
+  corners2 = cv2.cornerSubPix( grayColor, corners, (11, 11), (-1, -1), criteria) 
+  twodpoints.append(corners2) 
+  # Draw and display the corners 
+  image = cv2.drawChessboardCorners(image, 
+                  CHECKERBOARD, 
+                  corners2, ret) 
+
+```
+- 체커보드가 감지되면, 3차원 좌표 (`objectp3d`)를 `threedpoints` 리스트에 추가하고, 이에 대응되는 감지된 2차원 좌표 (`corners2`)를 `twodpoints` 리스트에 추가합니다.
+
+```python
+ret, matrix, distortion, r_vecs, t_vecs = cv2.calibrateCamera( 
+	threedpoints, twodpoints, grayColor.shape[::-1], None, None) 
+
+...
+
+json_data = {
+    "camera_matrix": matrix.tolist(),
+    "dist_coeff": distortion.tolist()
+}
+with open(os.path.join("camera_params","camera_intrinsic.json"), "w") as f:
+    json.dump(json_data, f, indent=4)
+```
+- `cv2.calibrateCamera()` 함수를 이용하여 카메라의 Intrinsic Parameter를 계산합니다. 이 함수는 3차원 좌표와 2차원 좌표를 입력으로 받아 카메라 매트릭스 (`matrix`)와 왜곡 계수 (`distortion`)를 반환합니다.
+- 계산된 카메라 매트릭스와 왜곡 계수를 JSON 형식으로 저장합니다. 이 파일은 이후 이미지 보정에 사용됩니다.
 
 
 ## 3. Intrinsics Parameter를 이용한 보정 이미지 추출
@@ -66,9 +119,19 @@ Camera Calibration을 수행하기 위해서는 보정하고자 하는 이미지
 ### 예제 코드 (`2_calibrate.py`)
 
 #### 주요 함수 및 역할
+```python
+new_camera_matrix, roi = cv2.getOptimalNewCameraMatrix(
+        camera_matrix, dist_coeffs, (w, h), 1, (w, h)
+    )
+```
+- `cv2.getOptimalNewCameraMatrix()`: 카메라 매트릭스와 왜곡 계수를 이용하여 최적의 새로운 카메라 매트릭스를 계산합니다. 이 함수는 이미지 크기와 ROI(Region of Interest)를 고려하여 새로운 카메라 매트릭스를 반환합니다.
 
-- `cv2.undistort()`: 카메라의 Intrinsic parameter를 이용해 이미지를 보정합니다.
-
+```python
+# 왜곡 제거
+    undistorted_img = cv2.undistort(img, camera_matrix, dist_coeffs, None, new_camera_matrix)
+```
+- `cv2.undistort()`: 주어진 이미지에서 왜곡을 제거합니다. 입력으로는 원본 이미지, 카메라 매트릭스, 왜곡 계수, 그리고 새로운 카메라 매트릭스가 필요합니다.
+- 이후 왜곡이 보정된 사진을 지정된 경로에 저장합니다.
 
 #### 실행 결과
 
