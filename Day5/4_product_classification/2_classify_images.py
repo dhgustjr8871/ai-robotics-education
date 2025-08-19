@@ -34,7 +34,11 @@ if __name__ == "__main__":
     outdir.mkdir(parents=True, exist_ok=True)
 
     # Load model
-    model = YOLO(weight_path)
+    try:
+        model = YOLO(weight_path)
+    except Exception as e:
+        print(f"Error loading model from {weight_path}: {e}")
+        raise SystemExit(1)
     try:
         device = "0" if torch.cuda.is_available() else "cpu"
     except Exception:
@@ -50,9 +54,7 @@ if __name__ == "__main__":
     results = model.predict(
         source=[str(p) for p in images],
         imgsz=320,
-        device=device,
-        stream=True,
-        verbose=False
+        device=device
     )
 
     # CSV (per-image)
