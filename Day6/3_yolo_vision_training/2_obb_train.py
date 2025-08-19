@@ -4,8 +4,7 @@ if __name__ == "__main__":
 	# Load a pretrained YOLO11n model
 	model = YOLO("yolo11n-obb.yaml").load("weights/obb/best.pt")
 
-	results = model.train(data="datasets/obb/data.yaml", epochs=100, imgsz=1024, device=0)
-	metrics = model.val()
+	model.train(data="datasets/obb/data.yaml", epochs=100, imgsz=1024, device=0)
 
 	results=model(source="eval_image.png",save=True)
 	results[0].show()  # Display results
